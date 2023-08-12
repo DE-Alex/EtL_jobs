@@ -1,2 +1,2 @@
-https://www.upwork.com/o/jobs/browse/	python	https://www.upwork.com/o/jobs/browse/?q=python&sort=renew_time_int%2Bdesc	 
-https://www.upwork.com/o/jobs/browse/	parsing	https://www.upwork.com/o/jobs/browse/?q=parsing&sort=renew_time_int%2Bdesc	 
+https://www.upwork.com/o/jobs/browse/	python	https://www.upwork.com/o/jobs/browse/?q=python&sort=renew_time_int%2Bdesc
+https://www.upwork.com/o/jobs/browse/	parsing	https://www.upwork.com/o/jobs/browse/?q=parsing&sort=renew_time_int%2Bdesc

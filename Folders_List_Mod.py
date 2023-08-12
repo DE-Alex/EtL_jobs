@@ -1,7 +1,7 @@
 import os
 import pprint
 
-#Actualization List of URL to sites and names of their folders
+#Actualization List of URL (Folders_List.py) to sites and names of their folders
 def Folders_List (CWD):
 	print '\n','.'*20,"Folder's Check",'.'*20,'\n'
 	
@@ -23,8 +23,8 @@ def Folders_List (CWD):
 	print 'Updating...'
 	New_List = {}
 	delta = len(Old_List.keys()) - len(Dir_List)
-	if delta <= 0:
-		for folder in Dir_List: #adding new folders to New_List
+	if delta <= 0: #adding new folders to New_List
+		for folder in Dir_List: 
 			try:
 				site_file = open(CWD + '\\Templates\\' + folder + '\\Site.txt')
 				site = site_file.read().rstrip() #read and kill /n symbol 

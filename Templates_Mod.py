@@ -75,8 +75,8 @@ if __name__ == '__main__':
 	else:
 		CWD = sys.path[0]	
 		
-	#Folders_List = Templates.Folders_List.List
-	#Scan(CWD, Folders_List)
+	Folders_List = Templates.Folders_List.List
+	Scan(CWD, Folders_List)
 	
 	'''
 	Templates_scan  = Scan(CWD, Folders_List)

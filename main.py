@@ -6,6 +6,12 @@ import Folders_List_Mod
 import Templates_Mod
 import Download_Mod
 
+#TODO Join Templates_Mod and Folders_List_Mod
+#decrease number of objects:
+#KeyList = {'Links' : Sorter[1], 'Words' : Sorter[2]}
+#Folders_List = {site: folder}
+#Templates_scan = {folder : (Login, Password, template_path)}
+
 
 print '\n','='*20,"Starting to parse!",'='*20,'\n'
 #=============Self Testing (TEMP)====================
@@ -61,8 +67,36 @@ Download_Mod.DownloadBy_Requests(CWD, flag)
 print 'Done'
 
 # ====== Parsing Requests ======
-print 'Parse Requests'
+#print 'Parse Requests'
 
+
+
+
+
+'''
+#Downloading page by link 
+SavedPages = []
+for url in ULSP:
+	site, login, password = ULSP[url]
+	Headers = {'User-Agent':'Mozilla/5.0 (Linux; Android 6.0.1; Redmi 4 Build/MMB29M) AppleWebKit/537.36 Chrome/66.0.3359.126 Mobile Safari/537.36'}
+	LoadedPage = requests.get(url, headers = Headers, auth = (login, password))
+	print LoadedPage.status_code == requests.codes.ok
+	print '-'*60
+	print 'Save Request to file...'
+	S = Save_Mod.SaveRequest(LoadedPage.content, url, CWD)
+	SavedPages.append(S)
+	print 'Done.'
+	print '='*60	
+'''
+
+
+
+	
+
+	
+
+	
+	
 
 
 

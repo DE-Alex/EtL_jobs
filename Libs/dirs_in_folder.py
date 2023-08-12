@@ -1,4 +1,4 @@
-#Creating list of dirs in Templates folder
+#Creating list of dirs in folder
 import os
 def List(path_to_folder):
 	Dir_List = []

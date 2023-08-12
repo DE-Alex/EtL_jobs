@@ -1,4 +1,4 @@
-import os, sys,shutil
+import os, sys, shutil
 	
 #checking for desktop or mobile
 #because of different work directory when start on PC or Mobile
@@ -34,6 +34,7 @@ def Check_for_BIGNAMES(CWD):
 if __name__ == '__main__':
 	CWD = Check_for_CWD()
 	print 'CWD=',CWD
+	
 	flag = Check_for_ComputerName()
 
 	Check_for_BIGNAMES(CWD)
