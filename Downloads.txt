@@ -1,0 +1,2 @@
+https://www.upwork.com/o/jobs/browse/	python	D:\Shapovalov\svoe\Python\PY\Parser_0 (request lib)\Save\https_www.upwork.com_o_jobs_browse_(python).log
+https://www.upwork.com/o/jobs/browse/	parsing	D:\Shapovalov\svoe\Python\PY\Parser_0 (request lib)\Save\https_www.upwork.com_o_jobs_browse_(parsing).log
