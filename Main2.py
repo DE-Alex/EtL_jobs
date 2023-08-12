@@ -1,13 +1,10 @@
 import sys, shutil
+import Libs.PC_or_Mobile 
 
 print 'renaming MAIN to main'
 
-print sys.path[0]
 
-if sys.path[0] == '\\storage\\emulated\\0\\qpython':
-	CWD = sys.path[0] + '\\projects\\parser'
-else:
-	CWD = sys.path[0]
+CWD = Libs.PC_or_Mobile.Check_for_CWD() #checking work directory
 
 	
 MAIN = CWD + "/MAIN.PY"

@@ -1,4 +1,4 @@
-import os, time
+import time
 import requests
 	
 def SaveContentToFile(CWD, PageContent, link, wordslist):
@@ -146,16 +146,11 @@ def DownloadBy_API():
 #=========================================================================	
 
 if __name__ == '__main__':
-	import os, sys
-	
-	if sys.path[0] == '\\storage\\emulated\\0\\qpython':
-		CWD = sys.path[0] + '\\projects\\parser'
-	else:
-		CWD = sys.path[0]	
-	
-	if ('ComputerName' in os.environ) and (os.environ['ComputerName'] == 'OPR-5'): flag = 'Local'
-	else: flag = 'OnLine'
-	print 'FLAG =',flag 
+	import Libs.PC_or_Mobile 
+	CWD = Libs.PC_or_Mobile.Check_for_CWD() #checking work directory
+	flag = Libs.PC_or_Mobile.Check_for_ComputerName()#checking Online or Local	
+
 	
 	DownloadBy_Requests(CWD, flag)	
+	print 'Done'
 	

@@ -3,6 +3,8 @@ import os, sys, shutil
 #checking for desktop or mobile
 #because of different work directory when start on PC or Mobile
 def Check_for_CWD():
+	#TODO: delete mobile path and replace for code below
+	#WD = os.path.dirname(__file__)
 	if sys.path[0] == '\\storage\\emulated\\0\\qpython':
 		CWD = sys.path[0] + '\\projects\\parser'
 	else:
@@ -28,6 +30,7 @@ def Check_for_BIGNAMES(CWD):
 				file_name = root + '\\' + file.capitalize()
 				shutil.move(FILE_NAME, file_name)
 			#else: print '- Ok'
+	print 'Check - OK'
 				
 
 		

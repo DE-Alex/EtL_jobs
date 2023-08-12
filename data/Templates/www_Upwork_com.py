@@ -1,10 +1,12 @@
 Filters = {'Category': {'Any Category': '',
 						'******': 'c/' + '*******'
 						},
+						#...
 						
 		'Sub Cat': {'Any Sub Category': '',
 						'******': 'sc/' + '*******'
 						},
+						#...
 
 			'Job Type': {'Any Job Type': '',
 						'Hourly': 't/0/',
@@ -44,6 +46,7 @@ Filters = {'Category': {'Any Category': '',
 						
 		'Client Location': {'Any location': ''
 						},
+						#...
 						
 		'Client Info': {'Any Client': '',
 						'My Previous Clients': 'previous_client=all',
@@ -65,10 +68,6 @@ Filters = {'Category': {'Any Category': '',
 						'More than 30 hrs/week': 'workload=full_time'
 						},
 					
-	#Category
-	#...
-	#Client location
-	#...
 }
 
 default_selection = {'Category':'',
