@@ -129,5 +129,5 @@ if __name__ == '__main__':
 	#wordslist = ['Word1','Word2','Word3']
 	selection = default_selection
 	Request = RequestGeneration(wordslist, selection)
-	print Request
+	print(Request)
 

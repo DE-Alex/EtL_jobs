@@ -1,94 +1,120 @@
 
-def Download_new_cookies(driver, site):
-	import time
-	try:
-		driver.get(site)
-		print 'Download new cookies. Waiting 7 sec...'
-		time.sleep(7)
-	except:
-		print 'Error in function Download_new_cookies!!!!'
+def Login(driver, cookie_path):
+	import time, random
+	from selenium.webdriver.common.keys import Keys
+	from selenium.common.exceptions import NoSuchElementException
+		
+	user_name = 'xxxx'
+	user_password = 'xxxxx'
+	loginpage = 'https://www.upwork.com/ab/account-security/login'
+	Login_input = '//*[@id="username_username"]'
+	Password_input = '//*[@id="password_password"]'
+	exclamation = 'Due to technical difficulties we are unable to process your request. Please try again later'
 	
 	
-	import Libs.PC_or_Mobile
-	CWD = Libs.PC_or_Mobile.Check_for_CWD() #checking work directory
-	driver.get_screenshot_as_file(CWD + '\\DataToScrape\\111.jpg')
-	#print CWD + 'Cookies_NEW.jpg'
-	cookies = driver.get_cookies()
+	print('Go to login page.')
+	for i in range(100):
+		driver.get(loginpage)
+		for i in range(100):
+			try:
+				Login = driver.find_element_by_xpath(Login_input)
+				break
+			except NoSuchElementException as e: time.sleep(0.5)
+		Login.clear()
+		Login.send_keys(user_name)
+		time.sleep(random.uniform(1,2))
+		Login.send_keys(Keys.RETURN)
+		time.sleep(random.uniform(4,5))
+		for i in range(100):
+			try:
+				Password = driver.find_element_by_xpath(Password_input)
+				break
+			except NoSuchElementException as e:
+				time.sleep(0.5)
+		Password.clear()
+		Password.send_keys(user_password)
+		time.sleep(random.uniform(1,2))
+		Password.send_keys(Keys.RETURN)
+		time.sleep(random.uniform(4,5))
+		for i in range(100):
+			if 'Upwork Freelancer' in driver.title:
+				print('Log in successful!')
+				return driver
+			else:
+				time.sleep(0.5)
+	
+	print('Log failed!')	
+	input('pause')
 
-	for cookie in cookies:
-		if (cookie['domain'].startswith('www')) == True:
-			#print cookie['name'], ' Bad Domain name found:', cookie['domain']
-			cookie['domain'] = cookie['domain'].replace('www.', '.', 1)
-			#print 'Repair domain name:', cookie['domain']
-			
-		#if ('expiry' in cookie and cookie['expiry'] < time.time()) == True:
-				#print 'Old cookie found, missing:', cookie['name'], cookie['expires']
-	return driver, cookies
+
+
+
 
 def Load(driver, site, cookie_path):
+	import os, datetime, time
+	import MyLibs.PyObject_to_PyFile as PyFile
 	
-	import selenium
-	#from selenium.common import exceptions
-	import os, datetime
-	import Libs.PyObject_to_PyFile as PyFile
-	
+	driver = Login(driver, cookie_path)
+
+	Save(driver.get_cookies(), cookie_path)
 	#check for file with cookies and if it it older than 1 hour
 	try:
 		t = os.path.getmtime(cookie_path)
 		delta = datetime.datetime.now() - datetime.datetime.fromtimestamp(t)
 		if (delta.seconds // 3600) > 0: #cookies more than 60 minutes old
-			#print 'Refresh old cookies'
 			cookies = False
 		else: cookies = True
 	except:
-		#print 'Cookies not found!', cookie_path
-		#print 'Try to get and save cookie'	
+		print(f'Cookies not found!({cookie_path}) Try to get and save cookie')
 		cookies = False
 	
-	#download or read cookies from file	
 	if cookies == False:
-		driver, cookies = Download_new_cookies(driver, site)
-		if len(cookies) != 0: PyFile.Write(cookies, cookie_path)
-		print 'Downloaded %d cookies' %(len(cookies))	
+		
+		#Download new cookies
+		try:
+			driver.get(site)
+			print('Download new cookies. Waiting ...')
+			#time.sleep(7)
+		except:
+			print('Error in function Download_new_cookies!!!!')
+		cookies = driver.get_cookies()
+		print('Loaded %d cookies' %(len(cookies)))
+		if len(cookies) != 0: Save(cookies, cookie_path)
 	else:
 		cookies = PyFile.Read(cookie_path)
-		print 'Read from file %d cookies' %(len(cookies)), cookie_path	
+		print('Read from file %d cookies' %(len(cookies)), cookie_path)
+		
 		#add cookies from file to driver
+		driver.get(site)
+		driver.delete_all_cookies()
 		for cookie in cookies:
-			try:
-				driver.add_cookie(cookie)
-			except:
-				print 'Cookie Error:'
-				print 'Name:', cookie['name']
-				print 'Domain:', cookie['domain']
+			try: driver.add_cookie(cookie)
+			except Exception as e: print(e)
 	
-	print 'Total %d cookies' %(len(cookies))
+		added_cookies = driver.get_cookies()
+		print('Added %d cookies' %(len(added_cookies)))
 	
-	added_cookies = driver.get_cookies()
-	print 'Added %d cookies' %(len(added_cookies))
-	
-	#check for not loaded cookies
-	if len(cookies) - len(added_cookies) != 0:
-		result = []
-		for cookie in cookies:
-			result.append(cookie['name'])
-		for cookie in added_cookies:
-			if cookie['name'] in result:
-				result.remove(cookie['name'])
-		print 'Not loaded %d cookies:' %(len(result)), result
+		#check for not loaded cookies
+		if len(cookies) - len(added_cookies) != 0:
+			result = []
+			for cookie in cookies:
+				result.append(cookie['name'])
+			for cookie in added_cookies:
+				if cookie['name'] in result:
+					result.remove(cookie['name'])
+			print('Not loaded %d cookies:' %(len(result)), result)
 	
 	return driver
 		
-
-def Save(driver, site, cookie_path):
-	import Libs.PyObject_to_PyFile as PyFile
-	cookies = driver.get_cookies()
+def Save(cookies, cookie_path):
+	import MyLibs.PyObject_to_PyFile as PyFile
+	
 	for cookie in cookies:
-		if (cookie['domain'].startswith('www')) == True:
-			cookie['domain'] = cookie['domain'].replace('www.', '.', 1)
-			print 'Repair domain name:', cookie['domain']
+		#check for invalid name 'expiry'. It should be 'expires'
+		if cookie.get('expiry', None) is not None:
+			cookie['expires'] = cookie.pop('expiry')
 	PyFile.Write(cookies, cookie_path)
-	print 'Saved %d cookies' %(len(cookies))
+	print('Saved %d cookies' %(len(cookies)))
 	
 					
 			
@@ -96,28 +122,34 @@ def Save(driver, site, cookie_path):
 
 if __name__ == '__main__':
 	import time
-	import Libs.PC_or_Mobile
-	CWD = Libs.PC_or_Mobile.Check_for_CWD() #checking work directory
-	from Libs.filename_from_link import Clear
+	import MyLibs.PC_or_Mobile
+	CWD = MyLibs.PC_or_Mobile.Check_for_CWD() #checking work directory
+	CWD = MyLibs.PC_or_Mobile.Check_for_CWD() #checking work directory
+	from MyLibs.filename_from_link import Clear
 	
-	from init_phantom_driver import init
-	path_PJS = CWD + '\\PhantomJS\\bin\\phantomjs.exe' #path to PhantomJS
-	driver = init(executable_path = path_PJS)
+	from MyLibs.init_web_driver import Chrome
+	
+	executable_path = CWD + '\\WebDriver\\Chrome\\chromedriver.exe' #path to webdriver
+	
+	UserAgent = 'Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:74.0) Gecko/20100101 Firefox/74.0'
+	headless = False
+	ip_port = '148.217.94.54:3128'
+	proxy = False
+	driver = Chrome(UserAgent, proxy, headless)
 	
 	site = 'https://www.upwork.com'
-	#site = 'https://www.yandex.ru'
-	
-	cookie_path = CWD + '\\Cookies' + '\\' + Clear(site) + '.log'
+	request = site
+	cookie_path = CWD + '\\Cookies' + '\\' + Clear(site) + '\\' +  ip_port.split(':')[0] + '.log'
 	
 	driver_with_cookies = Load(driver, site, cookie_path)
 	
-	request = 'https://www.upwork.com/search/jobs/'
+
 	driver_with_cookies.get(request)
 	time.sleep(5)
-	driver_with_cookies.get_screenshot_as_file(CWD + '\\DataToScrape' + '\\' + 'Finish.jpg')
+	driver_with_cookies.get_screenshot_as_file(CWD + '\\DataToScrape' + '\\' + 'Finish.png')
 	driver_with_cookies.close()
 	driver_with_cookies.quit()
-	print 'Complete'
-	#Save(driver, site, cookie_path)
+	print('Complete')
+
 	
 	

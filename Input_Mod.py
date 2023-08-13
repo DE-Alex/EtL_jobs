@@ -1,7 +1,7 @@
 def InputKeys(CWD):
 	#Import Links and Keywords to parse  from Input_key.txt to KeyList
-	print '.'*20,'Input Data','.'*20,'\n'
-	print 'Reading from "Input_key.txt"...'
+	print('.'*20,'Input Data','.'*20,'\n')
+	print('Reading from "Input_key.txt"...')
 	Input_file = open(CWD + '\\Input_key.txt')
 	
 
@@ -24,16 +24,16 @@ def InputKeys(CWD):
 	
 	KeyList = {'Links' : Links, 'Words' : Words}
 	Input_file.close()
-	print 'Read OK'
+	print('Read OK')
 	return KeyList
 	
 	
 if __name__ == '__main__':
-	import Libs.PC_or_Mobile 
-	CWD = Libs.PC_or_Mobile.Check_for_CWD() #checking work directory
+	import MyLibs.PC_or_Mobile 
+	CWD = MyLibs.PC_or_Mobile.Check_for_CWD() #checking work directory
 	
 	KeyList = InputKeys(CWD)
-	print KeyList
+	print(KeyList)
 	
 
 
