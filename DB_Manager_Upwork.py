@@ -236,15 +236,23 @@ def DropToDB(Jobs, DBpath, cashPath):
 	db.close()
 	return ins_count, upd_count
 		
-def clear_Upwork_data(json_PyObj):
-	assert type(json_PyObj) == dict, 'clear_Upwork_data: Invalid type of input data (non dict)'
+def delete_useless_keys(json_PyObj):
+	assert type(json_PyObj) == dict, 'delete_useless_keys: Invalid type of input data (non dict)'
 	try:
 		Jobs = json_PyObj['searchResults']['jobs']
 	except KeyError as e:
 		print(e)
 		return
-	assert type(Jobs) == list, 'clear_Upwork_data: Invalid type of input "Jobs" (non list)'
-		
+	assert type(Jobs) == list, 'delete_useless_keys: Invalid type of input "Jobs" (non list)'
+    
+    import configparser
+    config = configparser.ConfigParser()
+    config.read('keys_to_delete.conf')
+    main_keys = config.get('main_keys', 'keys').split()
+    client_keys = config.get('subkeys', 'client').split()
+    
+    
+	'''	
 	Useless_keys = ['shortDuration',
 					'durationLabel',
 					'shortEngagement',
@@ -276,15 +284,32 @@ def clear_Upwork_data(json_PyObj):
 					'lastContractRid',		#:'INTEGER'
 					'lastContractTitle',	#:'TEXT'
 					'feedbackText']			#:'TEXT'
-	
+	'''
 	for job in Jobs:
-		for key in Useless_keys: job.pop(key)
-		for key in Useless_subkeys: job['client'].pop(key)
+		for key in main_keys: job.pop(key)
+		for key in client_keys: job['client'].pop(key)
 	return Jobs
 	
 def Downgrade(Jobs):
 	#Downgrade data to 1 lvl complexity
 	for job in Jobs:
+    
+ 		#Searching new keys that can be added by Upwork
+		NewKeys = (set(job.keys()) - set(MAIN_TABLE_1rang_structure.keys())) - {'ID'}
+		if len(NewKeys) != 0:
+			print(f'Attention! New keys in job (ID = {job["ID"]}):')
+			for key in	NewKeys:
+				print(f'- {key} : {type(job[key])}')
+			answer = input('save json to hard drive? y/n')
+			if answer == 'y':
+				#save json to hard drive
+				import json, sys
+				time = datetime_to_str(now_local(), '%d.%m.%Y %H.%M')
+				PathToDump = f'{sys.path[0]}\Log\{time}.json'
+				with open(PathToDump, 'w') as f: json.dump(Jobs, f)
+				print(f'Saved to: {PathToDump}')
+			input('Press any key')   
+    
 		try:
 			#Setting time in '20.05.2020 16:18' format
 			time_now = datetime.now()
@@ -386,26 +411,11 @@ def Downgrade(Jobs):
 				with open(PathToDump, 'w') as f: json.dump(Jobs, f)
 				print(f'Saved to: {PathToDump}')
 			input('Press any key')
-			
-			
+
 		#eqiualizing jobs structure to BD structure
 		for key in MAIN_TABLE_1rang_structure:
 			if key not in job: job[key] = None
-		#Searching new keys that can be added by Upwork
-		NewKeys = (set(job.keys()) - set(MAIN_TABLE_1rang_structure.keys())) - {'ID'}
-		if len(NewKeys) != 0:
-			print(f'Attention! New keys in job (ID = {job["ID"]}):')
-			for key in	NewKeys:
-				print(f'- {key} : {type(job[key])}')
-			answer = input('save json to hard drive? y/n')
-			if answer == 'y':
-				#save json to hard drive
-				import json, sys
-				time = datetime_to_str(now_local(), '%d.%m.%Y %H.%M')
-				PathToDump = f'{sys.path[0]}\Log\{time}.json'
-				with open(PathToDump, 'w') as f: json.dump(Jobs, f)
-				print(f'Saved to: {PathToDump}')
-			input('Press any key')
+
 	return Jobs
 	
 if __name__ == '__main__':
@@ -422,7 +432,7 @@ if __name__ == '__main__':
 	#MyLibs.SQLite.BackUp(db, BackUp_path = r'D:\Shapovalov\svoe\Python\PY\DB_Upwork\back_up.sqlite3')
 	#print("DB backup done: %s")
 	
-	#Delete table
+	##Delete table
 	#MyLibs.SQLite.Delete_Table(table_name, db)
 	#Create Table for Upwork DB
 	#Create(table_name, MAIN_TABLE_1rang_structure, db)
@@ -445,7 +455,7 @@ if __name__ == '__main__':
 			json_data = js.read()
 			js.close()
 			json_PyObj = json.loads(json_data)
-			Jobs = clear_Upwork_data(json_PyObj)
+			Jobs = delete_useless_keys(json_PyObj)
 			Jobs = Downgrade(Jobs)
 			assert Jobs != None, f'Jobs == None in {file}'
 		except Exception as e:

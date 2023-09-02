@@ -1,0 +1,17 @@
+https://www.upwork.com/ab/jobs/search/url?nbs=1&q=&per_page=10&sort=recency
+
+ https://www.upwork.com/nx/jobs/search/?nbs=1&q=
+
+ https://www.upwork.com/ab/jobs/search/url?nbs=1&q=&per_page=50&sort=recency
+
+https://www.upwork.com/ab/jobs/search/url?per_page=50&sort=recency&page=4&q= 
+https://www.upwork.com/ab/jobs/search/url?per_page=50&sort=recency&contractor_tier=1&q=
+https://www.upwork.com/ab/jobs/search/url?per_page=50&sort=recency&t=0,1&contractor_tier=1&client_hires=0&proposals=5-9&amount=100-499&workload=as_needed&duration_v3=months&page=11&q=
+https://www.upwork.com/ab/jobs/search/url?per_page=50&sort=recency&category2_uid=531770282580668420
+							&t=0%2C1&
+				contractor_tier=1&client_hires=0&proposals=5-9&amount=100-499&workload=as_needed&duration_v3=months&location=Americas&timezone=Pacific%2FHonolulu&page=11&q=
+
+https://www.upwork.com/ab/jobs/search/url?per_page=50&sort=recency&t=0&page=100&q=
+
+
+https://www.upwork.com/nx/jobs/search/?nbs=1&q=
