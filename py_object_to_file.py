@@ -21,7 +21,6 @@ def read(file_path):
 	except FileNotFoundError as e:
 		print(f'{file_path} not found.')
 		return None
-		
 	except SyntaxError as e:
 		print(f'{file_path} non Python object.')
 		return None	

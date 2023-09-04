@@ -1,51 +1,42 @@
-#Если не работает то проверить:
-#0) почистить куки браузера (status code 502)
-#1) сверить user_agent с браузером (мог измениться после обновления браузера)
-#2) генерацию запросов (Upwork часто меняет)
-#3) сверить Headers в Upwork_requests с Header браузера
+#In case of faults:
+#0) clear browser's cookies (status code 502)
+#1) check user_agent in browser (may be it changes after browser update)
+#2) function that generates requests (Upwork changes it frequently)
+#3) check Headers in requests_upwork and browsers Header 
 
-# from pathlib import Path
-# import configparser
-# import sys
-# import pyscopg2	#pip install pyscopg2
+import configparser
+import sys
+#import os
+import traceback
+from pathlib import Path
+#from dateutil.tz import tzutc, tzlocal
+#from datetime import datetime, timedelta
+#tzlocal = tzlocal()
+#tzutc = tzutc()
 
-# import py_object_to_file as pyfile
+import py_object_to_file as pyfile
+import common_functions
+import ip_check
+import requests_upwork
 
-# import os, time
-# from datetime import datetime, timedelta
-# from shutil import copyfile
-# import traceback
-# import re
 
-# import MyLibs.PyObject_to_PyFile as PyFile
-# from MyLibs.Time import *
-# import MyLibs.SQLite
-# import MyLibs.Scan_DirsFiles
+#import DB_Manager_Upwork
 
-# import IP
-# import DB_Manager_Upwork
-# import Upwork_requests
 #================General settings=========================
-
 #check = timedelta(minutes = 10) ->> Airflow
-user_agent = config.get('parser_config', 'user_agent')
-proxy = config.get('parser_config', 'proxy')
-dt_format = config.get('parser_config', 'date_format')  
-
-
-
-script_fold = sys.path[0]
-err_log = Path(script_fold, 'Log', '#UpwErrors.log')
-journal_log = Path(script_fold, 'Log', 'journal.log')
-tmp_fold = Path(script_fold, 'Temp')
 
 config = configparser.ConfigParser()
-#pipe_conf = Path(Path.cwd(), 'pipeline.conf')
-config.read('pipeline.conf')
+config.read(Path(sys.path[0], 'pipeline.conf'))
 
-user_agent = config.get('parser_config', 'user_agent')
-proxy = config.get('parser_config', 'proxy')
-dt_format = config.get('parser_config', 'date_format')  
+proxy = config['parser_config']['proxy']
+dt_format = config['parser_config']['date_format']
+#user_agent = config['parser_config']['user_agent']
+
+logs_folder = Path(sys.path[0], config['parser_paths']['logs_folder'])
+
+journal_path = Path(logs_folder, config['parser_paths']['journal_file'])
+ip_log_path = Path(logs_folder, config['parser_paths']['ip_file'])
+err_path = Path(logs_folder, config['parser_paths']['errors_file']) 
 
 dbname = config.get("postgres_config", "database")
 user = config.get("postgres_config", "username")
