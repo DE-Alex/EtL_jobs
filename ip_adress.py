@@ -24,7 +24,7 @@ def request_service(proxy_port = False):
         ip = requests.get(URL, proxies = proxyDict, verify = mitm_cert_path).text
     return ip
 
-def check():
+def check_ip():
     while True:
         try:
             my_ip = request_service()

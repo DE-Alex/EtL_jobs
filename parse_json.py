@@ -1,11 +1,31 @@
-import MyLibs.SQLite
+import sys
+import configparser
 import pickle
-from MyLibs.Time import *
+from pathlib import Path
+from dateutil.tz import tzutc, tzlocal
+from datetime import datetime
+
+tzlocal = tzlocal()
+tzutc = tzutc()
+
+#read parser configs
+config = configparser.ConfigParser()
+config.read(Path(sys.path[0], 'pipeline.conf'))
+dt_format = config['parser_config']['date_format']
+date_filename_format = config['parser_config']['date_filename_format']
+logs_folder = Path(sys.path[0], config['parser_paths']['logs_folder'])
+err_path = Path(logs_folder, config['parser_paths']['errors_file']) 
+
+#read useless keys to delete
+conf_keys = configparser.ConfigParser()
+conf_keys.read(Path(sys.path[0], 'useless_keys.conf'))
+main_keys = conf_keys.get('main_keys', 'keys').split()
+client_keys = conf_keys.get('subkeys', 'client').split()
 
 #===DATA BASE
-table_name = 'Jobs'
+#table_name = 'jobs'
 
-MAIN_TABLE_1rang_structure = {#'ID' column created with table as PRIMARY KEY
+MAIN_TABLE_1rang_structure = {#'id' column created with table as PRIMARY KEY
 'occupations_category':'TEXT',
 'occupations_subcategories':'TEXT',#Check for number of subcategories (usually 1)!!!!
 'occupations_oservice':'TEXT',
@@ -34,8 +54,8 @@ MAIN_TABLE_1rang_structure = {#'ID' column created with table as PRIMARY KEY
 'client_totalSpent':'INTEGER',
 'client_totalReviews':'INTEGER',
 'client_totalFeedback':'INTEGER',
-'client_edcUserId':'INTEGER',       #Client Odesk ID
-'client_companyOrgUid':'TEXT',      #Client's Company ID
+'client_edcUserId':'INTEGER',       #Client Odesk id
+'client_companyOrgUid':'TEXT',      #Client's Company id
 'client_hasFinancialPrivacy': 'INTEGER',# 0 /1 WTF????
 'client_USA_city':'TEXT',           #USA city? 1 value (arount values 190 total)
 'category2_uid': 'INTEGER',
@@ -60,7 +80,7 @@ MAIN_TABLE_1rang_structure = {#'ID' column created with table as PRIMARY KEY
 'closed':'INTEGER'
 }
 
-#Category ID, SubCategory ID, Name
+#Category id, SubCategory id, Name
 OldUIDsNames = [('531770282580668416', 0, 'Admin Support'),
  ('531770282580668416', '531770282584862724', 'Data Entry & Transcription Services'),
  ('531770282580668416', '531770282584862725', 'Virtual Assistance'),
@@ -142,8 +162,7 @@ OldUIDsNames = [('531770282580668416', 0, 'Admin Support'),
  ('531770282584862723', '1484275408410693632', 'Public Law'),
  ('531770282584862723', '531770282605834246', 'Corporate & Contract Law'),
  ('531770282584862723', '531770283696353280', 'Finance & Tax Law')]             
-                
-    
+
 def CategoriesCheck(json_PyObj, err_log):
     occupations = json_PyObj['searchResults']['facets']['occupations']
     NewUIDsNames = []
@@ -172,7 +191,7 @@ def CategoriesCheck(json_PyObj, err_log):
                 Uid_N, subUid_N, Label_N = j
                 found = False
                 if Uid_O == Uid_N and subUid_O == subUid_N: found = True #change Label
-                elif Uid_O == Uid_N and Label_O == Label_N: found = True #change subUID
+                elif Uid_O == Uid_N and Label_O == Label_N: found = True #change subUid
                 elif subUid_O == subUid_N and Label_O == Label_N: found = True #change  Uid
                 elif subUid_O == subUid_N: found = True #change Uid and Label
                 if found == True:
@@ -186,7 +205,7 @@ def CategoriesCheck(json_PyObj, err_log):
                 Uid_O, subUid_O, Label_O = j
                 found = False
                 if Uid_O == Uid_N and subUid_O == subUid_N: found = True #change Label
-                elif Uid_O == Uid_N and Label_O == Label_N: found = True #change subUID
+                elif Uid_O == Uid_N and Label_O == Label_N: found = True #change subUid
                 elif subUid_O == subUid_N and Label_O == Label_N: found = True #change  Uid
                 elif subUid_O == subUid_N: found = True #change Uid and Label
                 if found == True:
@@ -196,92 +215,38 @@ def CategoriesCheck(json_PyObj, err_log):
 
         time = datetime_to_str(now_local(), '%d.%m.%Y %H.%M')
         with open(err_log, 'a') as file: 
-            file.write(time + '\n' + '(!) UIDs and Labels changed:\n')
+            file.write(time + '\n' + '(!) Uids and Labels changed:\n')
             for row in result: file.write(str(row) + ',' + '\n')
         #save json to hard drive
         import json, sys
         with open(f'{sys.path[0]}\Log\{time}.json', 'w') as f: json.dump(json_PyObj, f)
     
-def Create(table_name, table_columns, db):
-    MyLibs.SQLite.Create_Table(table_name, 'ID', 'INTEGER', db, PrimaryKey = 'PRIMARY KEY')
-    MyLibs.SQLite.AddColumnMany(table_name, table_columns, db)
+def get_jobs(json_data):
+    jobs = json_data['searchResults']['jobs']
+    return jobs
     
-def DropToDB(Jobs, DBpath, cashPath):
-    assert type(Jobs) == list, 'DropToDB: Invalid type of input "Jobs" (non list)'
-    db = MyLibs.SQLite.connect(DBpath)
-    ID_list = MyLibs.SQLite.Select_ID(table_name, db)
-    db.close()
+def total_jobs(json_data):
+    total = json_data['searchResults']['paging']['total']
+    return total
     
-    ins_Jobs = [job for job in Jobs if job['ID'] not in ID_list]#collect jobs to insertMany
-    upd_Jobs = [job for job in Jobs if job['ID'] in ID_list] #collect jobs to updateMany
+def jobs_by_occupations(json_data):
+    occupations = json_data['searchResults']['facets']['occupations']
+    return occupations
     
-    ins_count = len(ins_Jobs)
-    upd_count = len(upd_Jobs)
-
-    db = MyLibs.SQLite.connect(DBpath)
-    if ins_count !=0: MyLibs.SQLite.InsertMany(table_name, ins_Jobs, db)
-    if upd_count !=0: MyLibs.SQLite.UpdateManyByID(table_name, upd_Jobs, db)
-    db.close()
-    
-    db = MyLibs.SQLite.connect(cashPath)
-    cID_list = MyLibs.SQLite.Select_ID(table_name, db)
-    db.close()
-    
-    ins_Cash = [job for job in Jobs if job['ID'] not in cID_list]
-    upd_Cash = [job for job in Jobs if job['ID'] in cID_list]
-
-    db = MyLibs.SQLite.connect(cashPath)
-    if len(ins_Cash) !=0: MyLibs.SQLite.InsertMany(table_name, ins_Cash, db)
-    if len(upd_Cash) !=0: MyLibs.SQLite.UpdateManyByID(table_name, upd_Cash, db)
-    db.close()
-    return ins_count, upd_count
-        
-def delete_useless_keys(json_PyObj):
-    assert type(json_PyObj) == dict, 'delete_useless_keys: Invalid type of input data (non dict)'
-    try:
-        Jobs = json_PyObj['searchResults']['jobs']
-    except KeyError as e:
-        print(e)
-        return
-    assert type(Jobs) == list, 'delete_useless_keys: Invalid type of input "Jobs" (non list)'
-    
-    import configparser
-    config = configparser.ConfigParser()
-    config.read('useless_keys.conf')
-    main_keys = config.get('main_keys', 'keys').split()
-    client_keys = config.get('subkeys', 'client').split()
-
-    for job in Jobs:
+def delete_useless_keys(jobs):
+    for job in jobs:
         for key in main_keys: job.pop(key)
         for key in client_keys: job['client'].pop(key)
-    return Jobs
-    
-def Downgrade(Jobs):
-    #Downgrade data to 1 lvl complexity
-    for job in Jobs:
-    
-        #Searching new keys that can be added by Upwork
-        NewKeys = (set(job.keys()) - set(MAIN_TABLE_1rang_structure.keys())) - {'ID'}
-        if len(NewKeys) != 0:
-            print(f'Attention! New keys in job (ID = {job["ID"]}):')
-            for key in  NewKeys:
-                print(f'- {key} : {type(job[key])}')
-            answer = input('save json to hard drive? y/n')
-            if answer == 'y':
-                #save json to hard drive
-                import json, sys
-                time = datetime_to_str(now_local(), '%d.%m.%Y %H.%M')
-                PathToDump = f'{sys.path[0]}\Log\{time}.json'
-                with open(PathToDump, 'w') as f: json.dump(Jobs, f)
-                print(f'Saved to: {PathToDump}')
-            input('Press any key')   
-    
+    return jobs
+
+#Downgrade json to 1 lvl complexity    
+def downgrade_structure(jobs):
+    for job in jobs:
         try:
-            #Setting time in '2020.05.20 16:18' format
-            time_now = datetime.now()
-            job['last_updated'] = time_now.isoformat()
-            #Setting ID
-            job['ID'] = int(job['uid'])
+            #Setting UTC time
+            job['last_updated'] = datetime.strftime(datetime.now(tzutc), "%Y-%m-%dT%H:%M:%S%z")
+            #Setting id
+            job['id'] = int(job['uid'])
             job.pop('uid')
             #Ammount
             job['amount_currencyCode'] = job['amount']['currencyCode']
@@ -291,105 +256,116 @@ def Downgrade(Jobs):
             if 'weeklyBudget' in job:
                 if type(job['weeklyBudget']) == dict: 
                     job['weeklyBudget_currencyCode'] = job['weeklyBudget'].get('currencyCode', None)
-                    #print(job['weeklyBudget_currencyCode'])
-                    #job['weeklyBudget_currencyCode'] = job['weeklyBudget']['currencyCode']
                     job['weeklyBudget_amount'] = job['weeklyBudget'].get('amount', None)
-                    #print(job['weeklyBudget_amount'])
                 job.pop('weeklyBudget')
             #HourlyBudget   
             if 'hourlyBudgetText' in job: 
                 job['hourlyBudget_amount'] = job['hourlyBudgetText']
                 job.pop('hourlyBudgetText')
-            #Occupations
+            #Occupations category
             job['occupations_category'] = job['occupations']['category']['prefLabel']
             job['category2_uid'] = job['occupations']['category']['uid']
-            #--------
-            if len(job['occupations']['subcategories']) > 1: print(f'Attention!!\njob ID = {job["ID"]}\n Number of "subcategories" in "occupations" >1')
+            #Occupations subcategories
+            if len(job['occupations']['subcategories']) > 1:
+                print(f'Attention!!\njob id = {job["id"]}\n Number of "subcategories" in "occupations" >1')
             job['occupations_subcategories'] = ('+').join([subcat['prefLabel'] for subcat in job['occupations']['subcategories']])
             job['subcategory2_uid'] = ('+').join([subcat['uid'] for subcat in job['occupations']['subcategories']])
-
-            #-------
-            if type(job['occupations']['oservice'])== dict: job['occupations_oservice'] = job['occupations']['oservice']['prefLabel']
+            #Occupations oservice
+            if type(job['occupations']['oservice'])== dict: 
+                job['occupations_oservice'] = job['occupations']['oservice']['prefLabel']
             job.pop('occupations')
             #Client
             for key in job['client'].keys():
                 new_key = 'client' +'_'+ key
-                if key == 'location': job[new_key] = job['client']['location']['country']
-                else: job[new_key] = job['client'][key]
-                #print(new_key, job[new_key])
+                if key == 'location': 
+                    job[new_key] = job['client']['location']['country']
+                else: 
+                    job[new_key] = job['client'][key]
             job.pop('client')
-            #Locations (1 USA city usually?)
+            #EnterpriceJob
+            if job['enterpriseJob'] == False:
+               job['enterpriseJob'] = 0
+            elif job['enterpriseJob'] == True:
+                job['enterpriseJob'] = 1
+            #Locations
             if len(job['locations']) != 0:
-                job['client_USA_city'] = job['locations'][0]['name']#USA city?
-            else: job['client_USA_city'] = None
+                job['client_USA_city'] = job['locations'][0]['name']
+            else: 
+                job['client_USA_city'] = None
             job.pop('locations')
             #FreelancersLocation
             N = len(job['prefFreelancerLocation'])
             job['prefFreelancerLocation_number'] = N
-            if N != 0:
-                for i in range (0, N):
-                    if i == 0: break #limit to 0 main locations!!!
-                    #new_name = f'prefFreelancerLocation_{i}'
-                    #job[new_name] = job['prefFreelancerLocation'][i]
-                job['prefFreelancerLocation_all'] = pickle.dumps(job['prefFreelancerLocation']) #all locations (type - list)!!
-                #print(pickle.loads(job['prefFreelancerLocation_all'])) #command to Load Locations 
-            else: job['prefFreelancerLocation_all'] = None
+            if N > 0:
+                job['prefFreelancerLocation_all'] = pickle.dumps(job['prefFreelancerLocation'])
+            else: 
+                job['prefFreelancerLocation_all'] = None
             job.pop('prefFreelancerLocation')
             #Skills
-            #Ns = len(job['skills'])
             Na = len(job['attrs'])
-            #if Ns >= Na:   
-            #   key = 'skills'
-            #   N = Ns
-            #elif Ns < Na:
+            job['skills_number'] = Na
             if Na >0:
-                key = 'attrs'
-                N = Na
-            else: N = 0
-            job['skills_number'] = N
-            if N != 0:
-                for i in range (0, N):
-                    if i == 0: break #limit to 0 main skills!!!
-                    #new_name = f'skill_{i}'
-                    #job[new_name] = job[key][i]['prettyName']
                 skills_All = [] 
-                for skill in job[key]: skills_All.append(skill['prettyName'])
-                job['skills_all'] = pickle.dumps(skills_All)#all skills(type - list)!!
+                for skill in job['attrs']: 
+                    skills_All.append(skill['prettyName'])
+                job['skills_all'] = pickle.dumps(skills_All)
                 #print(pickle.loads(job['skills_all'])) #command to Load skills 
-            else: job['skills_all'] = None
-            #job.pop('skills')
+            else: 
+                job['skills_all'] = None
             job.pop('attrs')
             #Tags
             if 'tags' in job:
-                if job['tags'] == []: job['tags'] = None
-                else: job['tags'] = ','.join(job['tags'])
-                        
+                if job['tags'] == []: 
+                    job['tags'] = None
+                else:
+                    job['tags'] = ','.join(job['tags'])
+                    
         except Exception as e:
             import sys
             exc_type, exc_obj, exc_tb = sys.exc_info()
             print(f"Downgrade error in line:{exc_tb.tb_lineno}\n{e}\n title:{job['title']})")
-            answer = input('save json to hard drive? y/n')
-            if answer == 'y':
-                #save json to hard drive
-                import json, sys
-                time = datetime_to_str(now_local(), '%d.%m.%Y %H.%M')
-                PathToDump = f'{sys.path[0]}\Log\{time}.json'
-                with open(PathToDump, 'w') as f: json.dump(Jobs, f)
-                print(f'Saved to: {PathToDump}')
-            input('Press any key')
+            dump_json(job) 
 
         #eqiualizing jobs structure to BD structure
         for key in MAIN_TABLE_1rang_structure:
-            if key not in job: job[key] = None
+            if key not in job: 
+                job[key] = None
+                
+        #converting boolean to integer 
+        #due to previpus SDB SQLight doesn't support boolean.
+        for key, value in job.items():
+            if value == True:
+                job[key] = 1
+            elif value == False:
+                job[key] = 0
+            else:
 
-    return Jobs
+                pass
+                
+        #Checking for new keys that can be added by Upwork
+        NewKeys = (set(job.keys()) - set(MAIN_TABLE_1rang_structure.keys())) - {'id'}         
+        if len(NewKeys) != 0:
+            print(f'Attention! New keys in job (id = {job["id"]}):')
+            for key in  NewKeys:
+                print(f'- {key} : {type(job[key])}')
+            dump_json(job)
+    return jobs
+    
+def dump_json(job):
+    # import json
+    # time = datetime.strftime(datetime.now(tzlocal), date_filename_format)#datetime obj to str
+    # dump_path = Path(logs_folder, f'{time}.json')
+    # with open(dump_path, 'w') as f:
+        # json.dump(job, f)
+    # print(f'Saved json to: {dump_path}')
+    input('Press any key to continue.')  
     
 if __name__ == '__main__':
     #pass
     import json, time
     path_from = r'D:\Shapovalov\svoe\Python\PY\Raw_Jsons\01.11.2021 06.42'
     
-    path_to = r'D:\Shapovalov\svoe\Python\PY\DB_Upwork\Jobs.sqlite3'#Upwork jobs
+    path_to = r'D:\Shapovalov\svoe\Python\PY\DB_Upwork\jobs.sqlite3'#Upwork jobs
     #path_to = r'D:\Shapovalov\svoe\Python\PY\Parser3\MyLibs\Test\test_SQLbase.sqlite3'
     #path_to = r'D:\Shapovalov\svoe\Python\PY\DB_Upwork\24_05.sqlite3'#Upwork jobs
     
@@ -404,7 +380,7 @@ if __name__ == '__main__':
     #Create(table_name, MAIN_TABLE_1rang_structure, db)
 
     #=======with 1 JSON file
-    # file = r'D:\Shapovalov\svoe\Python\PY\Raw_Jsons\old_Jobs\1.json'
+    # file = r'D:\Shapovalov\svoe\Python\PY\Raw_Jsons\old_jobs\1.json'
     # File_list = [file]
         
     #=======with JSON all files
@@ -421,19 +397,19 @@ if __name__ == '__main__':
             json_data = js.read()
             js.close()
             json_PyObj = json.loads(json_data)
-            Jobs = delete_useless_keys(json_PyObj)
-            Jobs = Downgrade(Jobs)
-            assert Jobs != None, f'Jobs == None in {file}'
+            jobs = delete_useless_keys(json_PyObj)
+            jobs = Downgrade(jobs)
+            assert jobs != None, f'jobs == None in {file}'
         except Exception as e:
             print(f"{file}\n{e}")
             input('Press any key')
-        Total_DB.append(Jobs)
+        Total_DB.append(jobs)
     print("All jobs readed from files: %s" % (time.time() - start0))
     
     result = {'insert': 0, 'update': 0}
     start1 = time.time()
-    for Jobs in Total_DB:   
-        insert, update = DropToDB(Jobs, db)
+    for jobs in Total_DB:   
+        insert, update = DropToDB(jobs, db)
         result['insert'] = result['insert'] + insert
         result['update'] = result['update'] + update
         print(f"Result: {result['insert']} jobs inserted, {result['update']} jobs updated")

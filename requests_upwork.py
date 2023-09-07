@@ -7,6 +7,7 @@ from datetime import datetime, timedelta
 tzlocal = tzlocal()
 tzutc = tzutc()
 
+import parse_json
 import cookies_mod
 import mitm.change_mitm_headers
 
@@ -16,6 +17,7 @@ config.read(Path(sys.path[0], 'pipeline.conf'))
 
 proxy = config['parser_config']['proxy']
 dt_format = config['parser_config']['date_format']
+date_filename_format = config['parser_config']['date_filename_format']
 user_agent = config['parser_config']['user_agent']
 
 logs_folder = Path(sys.path[0], config['parser_paths']['logs_folder'])
@@ -73,10 +75,7 @@ def requests_pattern(page = 1, cat_uid = '', subcat_uid = '', jobType = '', cHir
     return request
 
 
-def form_requests_list(json_data, previous_url):
-    occupations = json_data['searchResults']['facets']['occupations']
-    print(f"Total {json_data['searchResults']['paging']['total']} jobs found")
-
+def form_requests_list(occupations, previous_url):
     #job's search options as filters for iteration
     filters = {2:['0', '1'],                               #'jobType': 0-Hourly, 1 - Fixed price
                3:['0', '1-9', '10-'],                      #'clientHires': no hires, 1-9 hires, 10+ hires
@@ -114,10 +113,10 @@ def requests_generator(i, previous_url, params, occupations, filters):
             #print(params)
             p0, p1, p2, p3, p4, p5 = params
             check_pages_url = requests_pattern(1, p0, p1, p2, p3, p4, p5)
-            get_req = send_request(check_pages_url, previous_url)
+            result = send_request(check_pages_url, previous_url)
+            json_data = result.json()
+            pages = parse_json.total_jobs(json_data)
             previous_url = check_pages_url
-            result = get_req.json()
-            pages = result['searchResults']['paging']['total']
             
         N = math.ceil(pages/50) #round to bigger number
         if N > 100 and i < 6:
@@ -131,10 +130,10 @@ def requests_generator(i, previous_url, params, occupations, filters):
                 print(f"\nToo many jobs in {cat_label}{subcat_label} with jobType = {p3}, clientHires = {p4} proposals = {p5} duration_v3 = {p6} !")
                 print('Load only first 5000 jobs')
                 import json
-                dt = datetime_to_str(now_local(), dt_format)
+                dt = datetime_to_str(now_local(), date_filename_format)
                 dump_path = Path(sys.path[0], 'Temp', f'{dt}_Error.json')
                 with open(dump_path, 'a') as file:
-                    json.dump(result, file)
+                    json.dump(json_data, file)
             else:
                 pass
             p0, p1, p2, p3, p4, p5 = params

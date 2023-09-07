@@ -14,13 +14,8 @@ dbname = config["postgres_config"]["database"]
 user = config["postgres_config"]["username"]
 password = config["postgres_config"]["password"]
 host = config["postgres_config"]["host"]
-#port = config["postgres_config"]["port"]
 port = config["postgres_config"]["port"]
-#port_int = int(config["postgres_config"]["port"])
 table_name = config['upwork']['upwork_table']
-
-logs_folder = Path(sys.path[0], config['parser_paths']['logs_folder'])
-
 
 #Change work dir, Scan it (without subdirs!) for file and dirs NAMES, and change work dir back
 #MASK: * - any symbols, ? - one symbol, [0-9], [?] or [8] - ? or * 
@@ -36,12 +31,12 @@ def DirScanByMask(f_path, mask):
     os.chdir(temp)
     return file_names
 
-def read_request_list():
+def read_request_list(temp_folder, mask):
     req_list, file_path = False, False
     
-    file_names = DirScanByMask(logs_folder, '*requests*')
+    file_names = DirScanByMask(temp_folder, f'*{mask}')
     for filename in file_names:
-        file_path = Path(logs_folder, filename)
+        file_path = Path(temp_folder, filename)
         with open(file_path) as file:
             groups = file.read().split('***')
         req_list = [i.split('\n') for i in groups if i != '']
@@ -69,24 +64,9 @@ def write_request_list(req_list, req_path):
                 file.write(f'{group_to_dump}\n***\n')
 
 
-def id_from_db():
-    conn = psycopg.connect(
-        "dbname=" + dbname
-        + " user=" + user
-        + " password=" + password
-        + " host=" + host,
-        port = port)
-        
-    id_query = f"SELECT id FROM {table_name};"
-    cursor = conn.cursor()
-    cursor.execute(id_query)
-    result = cursor.fetchall()
-    cursor.close()
-    conn.close()
-    
-    jobs_id = [item[0] for item in result]
-    return jobs_id
-
+#Upwork orders jobs in Recent List by 'createdOn'.
+#So if some job is renewed ('renewedOn') it is not come into the beginning of the List.
+#Parser can find such job, add to actualJobs and begin FullUpdate.
 def select_actual_jobs(jobs, checkpoint, jobs_id):
     actualJobs = []
     for job in jobs:
@@ -102,6 +82,15 @@ def select_actual_jobs(jobs, checkpoint, jobs_id):
     return actualJobs
     
 if __name__ == '__main__':
+
+    path = 'D:\Shapovalov\svoe\Python\PY\Parser6\Temp'
+    mask = 'requests.log'
+    a, res = read_request_list(path, f'*{mask}')
+    if a:
+        print(res)
+    print(len(a))
+    input()
+
     jobs_id = id_from_db()
     print('len:', len(jobs_id))
     for id in jobs_id:
