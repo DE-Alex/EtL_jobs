@@ -53,16 +53,17 @@ def check_ip():
             for key, value in ip_logs.items():
                 file.write(f'{key}:{value}\n')
                 
-    print(f'''My IP             :{my_ip}
+    print(f'''===========Proxy check==========
+My IP             :{my_ip}
 My IP (with proxy):{proxy_ip}
 It was used {ip_logs[proxy_ip]-1} time(s) before.
-=========================''')
+================================''')
     return proxy_ip
     
 
 if __name__ == '__main__':
     while True:
-        test_ip()
+        check_ip()
         time.sleep(3600)
         
         

@@ -21,17 +21,14 @@ import db_operations
 import ip_adress
 import requests_upwork
 import parse_json
-
-
 #================General settings=========================
 config = configparser.ConfigParser()
 config.read(Path(sys.path[0], 'pipeline.conf'))
 
 proxy = config['parser_config']['proxy']
-dt_format = config['parser_config']['date_format']
-date_filename_format = config['parser_config']['date_filename_format']
+filename_date_format = config['parser_config']['filename_date_format']
 
-requests_file = config['parser_paths']['requests_file']
+requests_filename = config['parser_paths']['requests_file']
 temp_folder = Path(sys.path[0], config['parser_paths']['temp_folder'])
 logs_folder = Path(sys.path[0], config['parser_paths']['logs_folder'])
 journal_path = Path(logs_folder, config['parser_paths']['journal_file'])
@@ -43,15 +40,14 @@ password = config.get("postgres_config", "password")
 host = config.get("postgres_config", "host")
 port = config.get("postgres_config", "port")
 table_name = config.get('upwork', 'upwork_table')
-
   
 def download_jobs():
-    #search for file with requests
-    req_list, req_path = common_functions.read_request_list(temp_folder, requests_file)
+    #search for file with requests (urls to download)
+    req_list, req_path = common_functions.read_request_list(temp_folder, requests_filename)
     if req_list:
         N_reqs = sum([len(list) for list in req_list])
-        req_list_date = datetime.strptime(req_path.name, date_filename_format + requests_file)
-        print(f'Request list from: {req_list_date}.\nRequests to download: {N_reqs}.')
+        req_list_date = datetime.strptime(req_path.name, filename_date_format + requests_filename)
+        print(f'Request list from: {req_list_date}')
     else:
         print(f'There is no requests to download. Exit.')
         return None
@@ -65,15 +61,18 @@ def download_jobs():
             result = file.read().split('\n')
         journal_recs = [i for i in result if i != '']
     except FileNotFoundError as e:
-        print(f'{journal_path} not found.')
+        print(f'{journal_path} not found')
         journal_recs = ['01.01.1970 00.00']
-    last_check_dt = datetime.strptime(journal_recs[-1], dt_format) #convert str to datetime obj
-    last_check_utc = last_check_dt.astimezone(tzutc) #add utc timezone
+        
+    last_check_loc = datetime.fromisoformat(journal_recs[-1])
+    last_check_utc = last_check_loc.astimezone(tzutc) #move to utc timezone    
         
     previous_url = requests_upwork.requests_pattern(page = 'start')
     
+    #download jobs by requests
+    print(f'Requests to download: {N_reqs}')
     try:
-        result = {'insert': 0, 'update': 0}
+        downl_cnt = {'insert': 0, 'update': 0}
         start = time.time()
         for requests in req_list:
             while len(requests) !=0:
@@ -81,7 +80,7 @@ def download_jobs():
                 url = requests[0]
                 req = requests_upwork.send_request(url, previous_url)
                 json_data = req.json()
-                # #save json to hard drive @@@@@@@@@@@@@@@
+                #save json to hard drive @@@@@@@@@@@@@@@
                 # import json
                 # with open(f'{sys.path[0]}\Temp\{N_reqs}.json', 'w') as f: 
                     # json.dump(json_data, f)
@@ -99,44 +98,33 @@ def download_jobs():
                     del requests[:]
                 else:
                     jobs_cleared = parse_json.delete_useless_keys(jobs_raw)
-                    jobs = parse_json.downgrade_structure(jobs_cleared)
+                    db_columns = db_operations.col_names_from_db()
+                    jobs = parse_json.downgrade_structure(jobs_cleared, db_columns)
                
                     #sorting jobs to insert or update
-                    insert, update = 0, 0
-
-                    
                     ins_count, upd_count, new_id = db_operations.drop_to_db(jobs, jobs_id)
-                    result['insert'] = result['insert'] + ins_count
-                    result['update'] = result['update'] + upd_count
-                    print(f"Result: {result['insert']}(+{ins_count}) inserted, {result['update']}(+{upd_count}) updated")
-                    #new_id = [job['id'] for job in jobs]
+                    downl_cnt['insert'] = downl_cnt['insert'] + ins_count
+                    downl_cnt['update'] = downl_cnt['update'] + upd_count
+                    print(f"Result: {downl_cnt['insert']}(+{ins_count}) inserted, {downl_cnt['update']}(+{upd_count}) updated")
                     jobs_id.extend(new_id)
                     del requests[0]
             common_functions.write_request_list(req_list, req_path)
-        Total_result = f"Total: {result['insert']} inserted, {result['update']} updated"
-        print(Total_result)
+
+        journal_recs = ('\n').join(journal_recs[-30:] + [req_list_date])
+        with open(journal_path, 'w') as file: 
+            file.write(journal_recs)        
+        os.remove(req_path)
+        print(f"Total: {downl_cnt['insert']} inserted, {downl_cnt['update']} updated")
         delta = round((time.time() - start))//60
         print(f"Downloaded in {delta} minutes")
-
-        FinishDate = re.compile('\d\d.\d\d.\d\d\d\d \d\d.\d\d').search(self.req_list_log).group()
-        self.lastCheck_dt = local_to_utc(str_to_datetime(FinishDate , dt_format))
-        self.journal_recs = self.journal_recs[-30:] + [FinishDate]
-        pyfile.Write(self.journal_recs, journal_log)
-        os.remove(self.req_list_log)
-        self.req_list_log = None
     except Exception:
         e = traceback.format_exc()
         print(e)
-        time_now = datetime.strftime(datetime.now(tzlocal), dt_format)#datetime obj to str
+        time_now = datetime.now(tzlocal).replace(microsecond = 0).isoformat()#datetime to str in isoformat 
         with open(err_path, 'a') as file: 
             file.write(time_now + '\n' + str(e) + '\n')
 
 if __name__ == '__main__':
-    try:
         download_jobs()
-    except SystemExit as e:
-        time_now = datetime.strftime(datetime.now(tzlocal), dt_format)#datetime obj to str
-        with open(err_path, 'a') as file: 
-            file.write(time_now + '\n' + str(e) + '\n')
             
 

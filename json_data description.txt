@@ -1,0 +1,53 @@
+#'id' column created with table as PRIMARY KEY
+'occupations_category':'TEXT',
+'occupations_subcategories':'TEXT',#Check for number of subcategories (usually 1)!!!!
+'occupations_oservice':'TEXT',
+'title':'TEXT',
+'description':'TEXT',               
+'Label':'TEXT',                     # My Label for classifier
+'type':'INTEGER',                   #(JobType) 1-Fixed price, 2 - Hourly, 3 - Weekly Retainer (weekly pay to be
+                                    #ready to get job in future)
+'workType':'TEXT',                  #"Remote", "Permanent", "Occasional"
+'duration':'TEXT',                  #weeks - "Less than 1 month"/ months - "1 to 3 months"/ semester - "3 to 6 months"/ongoing - "more than 6 months"
+'engagement':'TEXT',                #(workload) as needed: "Less than 30hrs/week" / full_time - "More than 10-30hrs/week"
+'totalFreelancersToHire':'INTEGER', #Number of FL to hire
+#=====Money===
+'amount_currencyCode':'TEXT',       #USD
+'amount_amount':'INTEGER',          #Budget (fixed price)
+'hourlyBudget_amount':'TEXT',       #$/hour payment
+'weeklyBudget_currencyCode':'TEXT',
+'weeklyBudget_amount':'INTEGER',    #$/week payment
+#=====Client===
+'skills_number':'INTEGER',
+'skills_all':'BLOB',                #all skills (over 100 per some jobs and up to 6000 total) stored by pickle
+'tier':'TEXT',                      #"Entry level", "Intermediate", "Expert"
+'enterpriseJob':'INTEGER',          #0 - False/ 1- True
+'client_paymentVerificationStatus':'INTEGER', #0-5 WTF????
+'client_location':'TEXT',           #Client's country
+'client_totalSpent':'INTEGER',
+'client_totalReviews':'INTEGER',
+'client_totalFeedback':'INTEGER',
+'client_edcUserId':'INTEGER',       #Client Odesk id
+'client_companyOrgUid':'TEXT',      #Client's Company id
+'client_hasFinancialPrivacy': 'INTEGER',# 0 /1 WTF????
+'client_USA_city':'TEXT',           #USA city? 1 value (arount values 190 total)
+'category2_uid': 'INTEGER',
+'subcategory2_uid': 'INTEGER',
+
+#=====Trash===
+'teamUid':'INTEGER',
+'premium':'INTEGER',                # 0 /1 WTF????
+'freelancersToHire':'INTEGER',
+'recno':'INTEGER',
+'prefFreelancerLocation_number':'INTEGER',
+'prefFreelancerLocation_all':'BLOB', #all locations (over 10 per job and up to 210 total) stored by pickle
+'ciphertext':'TEXT',                # WTF???? may be delete?
+'createdOn':'TEXT',
+'jobTs':'TEXT',                     #1588837356207
+'proposalsTier':'TEXT',             #Number of proposals "Less than 5"(0-4), "5 to 10"(5-9), "10 to 15"(10-14), "15 to 20"(15-19), "20 to 50"(20-49), "50+"(*)
+'publishedOn':'TEXT',
+'renewedOn':'TEXT',
+#=====Service===
+'last_updated':'TEXT',
+'tags':'TEXT',
+'closed':'INTEGER'

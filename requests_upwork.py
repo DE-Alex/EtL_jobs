@@ -2,22 +2,19 @@ import math
 import sys, requests, time
 import configparser
 from pathlib import Path
-from dateutil.tz import tzutc, tzlocal
-from datetime import datetime, timedelta
+from datetime import datetime
+from dateutil.tz import tzlocal
 tzlocal = tzlocal()
-tzutc = tzutc()
 
 import parse_json
 import cookies_mod
 import mitm.change_mitm_headers
 
-
 config = configparser.ConfigParser()
 config.read(Path(sys.path[0], 'pipeline.conf'))
 
 proxy = config['parser_config']['proxy']
-dt_format = config['parser_config']['date_format']
-date_filename_format = config['parser_config']['date_filename_format']
+filename_date_format = config['parser_config']['filename_date_format']
 user_agent = config['parser_config']['user_agent']
 
 logs_folder = Path(sys.path[0], config['parser_paths']['logs_folder'])
@@ -52,65 +49,34 @@ def requests_pattern(page = 1, cat_uid = '', subcat_uid = '', jobType = '', cHir
         url_parts.append(f'page={page}')    
     
     request = ('&').join(url_parts)
-    '''
-    if cat_uid != '': 
-        cat_uid = f'category2_uid={cat_uid}&'
-    if subcat_uid != '':
-        subcat_uid = f'subcategory2_uid={subcat_uid}&'
-        cat_uid = ''
-    if jobType != '': 
-        jobType = f't={jobType}&'
-    if cHires != '': 
-        cHires = f'client_hires={cHires}&'
-    if proposals != '': 
-        proposals = f'proposals={proposals}&'
-    if duration_v3 != '': 
-        duration_v3 = f'duration_v3={duration_v3}&'
-    if page == 1: 
-        page_num = ''
-    else: 
-        page_num = f'page={page}'
-    '''
-    #request = f'https://www.upwork.com/ab/jobs/search/url?per_page=50&sort=recency&{cat_uid}{subcat_uid}{jobType}{cHires}{proposals}{duration_v3}{page_num}'
     return request
 
-
 def form_requests_list(occupations, previous_url):
-    #job's search options as filters for iteration
+    #use uowork's search options as filters for iteration
     filters = {2:['0', '1'],                               #'jobType': 0-Hourly, 1 - Fixed price
                3:['0', '1-9', '10-'],                      #'clientHires': no hires, 1-9 hires, 10+ hires
                4:['0-4', '5-9', '10-14', '15-19', '20-49'],#'proposals': less than 5, 'a' to 'b' proposals
                5:['weeks', 'months', 'semester', 'ongoing']#'duration_v3'(project length): less 1 month, 1-3 months, 3-6 months, 6+ months
                }
-               
-    #req_list = []
     i = 0
     params = ['']*6
     previous_url, req_list = requests_generator(i, previous_url, params, occupations, filters)
-    
     return req_list, previous_url
 
 def requests_generator(i, previous_url, params, occupations, filters):
     req_list = []
-    #print('i=', i)
     if i <= 1:
         items = occupations
-    #elif i == 1:
-    #    category = params[0]
-    #    items = occupations[category]['occupations']
     elif i > 1:
         items = filters[i]
-        #print('filters = ', items)
        
     for item in items:
         if i <= 1:
             params[i] = item['uid'] #uid of category/subcategory
             pages = item['count']
             occupations = item['occupations']
-            #print(params[i], pages)
         else:
             params[i] = item
-            #print(params)
             p0, p1, p2, p3, p4, p5 = params
             check_pages_url = requests_pattern(1, p0, p1, p2, p3, p4, p5)
             result = send_request(check_pages_url, previous_url)
@@ -130,42 +96,21 @@ def requests_generator(i, previous_url, params, occupations, filters):
                 print(f"\nToo many jobs in {cat_label}{subcat_label} with jobType = {p3}, clientHires = {p4} proposals = {p5} duration_v3 = {p6} !")
                 print('Load only first 5000 jobs')
                 import json
-                dt = datetime_to_str(now_local(), date_filename_format)
+                now = datetime.now(tzlocal).replace(microsecond = 0)
+                dt = datetime_to_str(now, filename_date_format)
                 dump_path = Path(sys.path[0], 'Temp', f'{dt}_Error.json')
                 with open(dump_path, 'a') as file:
                     json.dump(json_data, file)
             else:
                 pass
             p0, p1, p2, p3, p4, p5 = params
-            #print(params)
             req = [requests_pattern(i, p0, p1, p2, p3, p4, p5) for i in range(1, N+1)]
             req_list.append(req)
             print(f'Requests: +{len(req)}')
-            #print('Len req_list:', len(req_list))
     params[i] = ''
-    #print('Len req_list:', len(req_list))
-    
- 
-    # req_path = Path(logs_folder, f'requests.log')
-    # import os
-    # directory = os.path.dirname(req_path)
-    # if not os.path.exists(directory):
-        # os.makedirs(directory)
-    # try:	
-        # with open (req_path, 'w') as file:
-            # for rec_group in req_list:
-                # group_to_dump = ('\n').join(rec_group)
-                # file.write(f'{group_to_dump}\n***\n')
-    # except:
-        # with open (req_path, 'w', encoding = 'utf-8') as file:
-            # for rec in req_list:
-                # group_to_dump = ('\n').join(rec_group)
-                # file.write(f'{group_to_dump}\n***\n')
-    
     return previous_url, req_list
      
 def send_request(url, previous_url):
-
     cookies_jar = requests.cookies.RequestsCookieJar()
     
     if proxy != False: 
@@ -174,9 +119,9 @@ def send_request(url, previous_url):
         proxy_dict = {}
         
     time.sleep(3)
-    i = -1
+    i = 0
     while True:
-        i += 1
+        i = i + 1
         cookies = cookies_mod.select_cookies()
 
         for cookie in cookies:
@@ -206,7 +151,7 @@ def send_request(url, previous_url):
             if req.status_code == requests.codes.ok: 
                 return req
             else:
-                time_now = datetime.strftime(datetime.now(tzlocal), dt_format)#datetime obj to str
+                time_now = datetime.now(tzlocal).replace(microsecond = 0).isoformat()#datetime obj to str in isoformat
                 with open(err_path, 'a') as file: 
                     file.write(f'{time_now} {i}:code {req.status_code}\n')
                 
@@ -216,22 +161,18 @@ def send_request(url, previous_url):
                 else: 
                     print(f'{i}: status code {req.status_code}. Paused for 0.5 min.')
                     time.sleep(30)
-                    #524 - lags
-                    #502 - reload MTM? - ok, after 5 min pause
-                    #401 - ok, after 5 min pause
-            if i >= 5:
-                print('Paused for 5 min.')
-                time.sleep(300)
+            if i >= 6:
+                print('Paused for 60 min.')
+                time.sleep(3600)
                 i = 0               
         except requests.exceptions.ProxyError as e: 
             print(f'{i}: ProxyError: ', e)
-            time_now = datetime.strftime(datetime.now(tzlocal), dt_format)#datetime obj to str
+            time_now = datetime.now(tzlocal).replace(microsecond = 0).isoformat()#datetime obj to str in isoformat
             with open(err_path, 'a') as file: 
                 file.write(time_now + '\n' + e + '\n')
             time.sleep(2)
     
 if __name__ == '__main__':
-    
     pass
     
     
