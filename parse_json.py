@@ -69,7 +69,8 @@ def downgrade_structure(jobs, db_columns):
             if len(job['occupations']['subcategories']) > 1:
                 print(f'Attention!!\njob id = {job["id"]}\n Number of "subcategories" in "occupations" >1')
             job['occupations_subcategories'] = ('+').join([subcat['prefLabel'] for subcat in job['occupations']['subcategories']])
-            job['subcategory2_uid'] = ('+').join([subcat['uid'] for subcat in job['occupations']['subcategories']])
+            #job['subcategory2_uid'] = ('+').join([subcat['uid'] for subcat in job['occupations']['subcategories']])
+            job['subcategory2_uid'] = [subcat['uid'] for subcat in job['occupations']['subcategories']][0]
             #Occupations oservice
             if type(job['occupations']['oservice'])== dict: 
                 job['occupations_oservice'] = job['occupations']['oservice']['prefLabel']

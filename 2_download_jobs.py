@@ -109,8 +109,9 @@ def download_jobs():
                     jobs_id.extend(new_id)
                     del requests[0]
             common_functions.write_request_list(req_list, req_path)
-
-        journal_recs = ('\n').join(journal_recs[-30:] + [req_list_date])
+        
+        etl_date = req_list_date.replace(microsecond = 0).isoformat()#datetime to str in isoformat 
+        journal_recs = ('\n').join(journal_recs[-30:] + [etl_date])
         with open(journal_path, 'w') as file: 
             file.write(journal_recs)        
         os.remove(req_path)

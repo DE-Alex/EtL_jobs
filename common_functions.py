@@ -39,7 +39,7 @@ def write_request_list(req_list, req_path):
     directory = os.path.dirname(req_path)
     if not os.path.exists(directory):
         os.makedirs(directory)
-    result = ('\n***\n').join([('\n').join(req_group) for req_group in req_list])
+    result = ('\n***\n').join([('\n').join(req_group) for req_group in req_list if len(req_group)>0])
     try:    
         with open (req_path, 'w') as file:
             file.write(result)

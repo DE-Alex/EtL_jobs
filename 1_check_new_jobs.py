@@ -50,8 +50,6 @@ def check_new_jobs():
     except FileNotFoundError as e:
         print(f'{journal_path} not found.')
         journal_recs = ['01.01.1970 00.00']
-    #last_check = journal_recs[-1]
-    # last_check_loc = parse(journal_recs[-1]) #parse str with local timezone to datetime
     last_check_loc = datetime.fromisoformat(journal_recs[-1])
     last_check_utc = last_check_loc.astimezone(tzutc) #move to utc timezone
     print('last check (local):', datetime.strftime(last_check_loc, '%Y.%m.%d %H:%M'))
