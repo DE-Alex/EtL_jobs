@@ -25,7 +25,7 @@ mitm_cert_path = Path(mitm_folder, config['parser_paths']['mitm_certificate'])
 
 mitm.change_mitm_headers.write_in(user_agent)
     
-def requests_pattern(page = 1, cat_uid = '', subcat_uid = '', jobType = '', cHires = '', proposals = '', duration_v3 = ''):
+def requests_pattern(page = 1, subcat_uid = '', jobType = '', cHires = '', proposals = '', duration_v3 = ''):
     if page == 'start':
         request = 'https://www.upwork.com/nx/jobs/search/?sort=recency' #& на конце после recency?
         return request
@@ -34,9 +34,6 @@ def requests_pattern(page = 1, cat_uid = '', subcat_uid = '', jobType = '', cHir
 
     if subcat_uid != '':
         url_parts.append(f'subcategory2_uid={subcat_uid}')
-    elif cat_uid != '': 
-        url_parts.append(f'category2_uid={cat_uid}')
-        
     if jobType != '': 
         url_parts.append(f't={jobType}')
     if cHires != '': 
@@ -51,49 +48,41 @@ def requests_pattern(page = 1, cat_uid = '', subcat_uid = '', jobType = '', cHir
     request = ('&').join(url_parts)
     return request
 
-def form_requests_list(occupations, previous_url):
-    #use uowork's search options as filters for iteration
-    filters = {2:['0', '1'],                               #'jobType': 0-Hourly, 1 - Fixed price
-               3:['0', '1-9', '10-'],                      #'clientHires': no hires, 1-9 hires, 10+ hires
-               4:['0-4', '5-9', '10-14', '15-19', '20-49'],#'proposals': less than 5, 'a' to 'b' proposals
-               5:['weeks', 'months', 'semester', 'ongoing']#'duration_v3'(project length): less 1 month, 1-3 months, 3-6 months, 6+ months
+def form_requests_list(json_data, previous_url):
+    #use upwork's search options as filters for iteration
+    subcategories = parse_json.parse_subcats_uids(json_data)
+    filters = {0:subcategories,
+               1:['0', '1'],                               #'jobType': 0-Hourly, 1 - Fixed price
+               2:['0', '1-9', '10-'],                      #'clientHires': no hires, 1-9 hires, 10+ hires
+               3:['0-4', '5-9', '10-14', '15-19', '20-49'],#'proposals': less than 5, 'a' to 'b' proposals
+               4:['weeks', 'months', 'semester', 'ongoing']#'duration_v3'(project length): less 1 month, 1-3 months, 3-6 months, 6+ months
                }
     i = 0
-    params = ['']*6
-    previous_url, req_list = requests_generator(i, previous_url, params, occupations, filters)
+    params = ['']*5
+    req_list, previous_url = requests_generator(i, previous_url, params, filters)
     return req_list, previous_url
 
-def requests_generator(i, previous_url, params, occupations, filters):
+def requests_generator(i, previous_url, params, filters):
     req_list = []
-    if i <= 1:
-        items = occupations
-    elif i > 1:
-        items = filters[i]
+    items = filters[i]
        
     for item in items:
-        if i <= 1:
-            params[i] = item['uid'] #uid of category/subcategory
-            pages = item['count']
-            occupations = item['occupations']
-        else:
-            params[i] = item
-            p0, p1, p2, p3, p4, p5 = params
-            check_pages_url = requests_pattern(1, p0, p1, p2, p3, p4, p5)
-            result = send_request(check_pages_url, previous_url)
-            json_data = result.json()
-            pages = parse_json.total_jobs(json_data)
-            previous_url = check_pages_url
+        params[i] = item
+        p0, p1, p2, p3, p4 = params
+        check_page_url = requests_pattern(1, p0, p1, p2, p3, p4)
+        result = send_request(check_page_url, previous_url)
+        json_data = result.json()
+        pages = parse_json.total_jobs(json_data)
+        previous_url = check_page_url
             
         N = math.ceil(pages/50) #round to bigger number
-        if N > 100 and i < 6:
-            previous_url, req = requests_generator(i+1, previous_url, params, occupations, filters)
+        if N > 100 and i < 5:
+            req, previous_url = requests_generator(i+1, previous_url, params, filters)
             req_list.extend(req)
         else:
             if N >= 100:
                 N = 100
-                cat_label = occupations[p1]['label']
-                subcat_label = occupations[p1]['occupations'][p2]
-                print(f"\nToo many jobs in {cat_label}{subcat_label} with jobType = {p3}, clientHires = {p4} proposals = {p5} duration_v3 = {p6} !")
+                print(f"\nToo many jobs in subcat uid={p0} with jobType = {p1}, clientHires = {p2} proposals = {p3} duration_v3 = {p4} !")
                 print('Load only first 5000 jobs')
                 import json
                 now = datetime.now(tzlocal).replace(microsecond = 0)
@@ -103,20 +92,20 @@ def requests_generator(i, previous_url, params, occupations, filters):
                     json.dump(json_data, file)
             else:
                 pass
-            p0, p1, p2, p3, p4, p5 = params
-            req = [requests_pattern(i, p0, p1, p2, p3, p4, p5) for i in range(1, N+1)]
+            p0, p1, p2, p3, p4 = params
+            req = [requests_pattern(i, p0, p1, p2, p3, p4) for i in range(1, N+1)]
             req_list.append(req)
             print(f'Requests: +{len(req)}')
     params[i] = ''
-    return previous_url, req_list
+    return req_list, previous_url
      
 def send_request(url, previous_url):
     cookies_jar = requests.cookies.RequestsCookieJar()
     
-    if proxy != False: 
-        proxy_dict = {"http"  : f"http://{proxy}", "https" : f"https://{proxy}"}
-    else: 
+    if proxy == 'no': 
         proxy_dict = {}
+    else:
+        proxy_dict = {"http"  : f"http://{proxy}", "https" : f"https://{proxy}"}
         
     time.sleep(3)
     i = 0
@@ -132,7 +121,7 @@ def send_request(url, previous_url):
             
         my_headers={'User-Agent' : user_agent,
                     'Accept': 'application/json, text/plain, */*',
-                    'Accept-Language' : 'ru-RU,ru;q=0.8,en-US;q=0.5,en;q=0.3',
+                    'Accept-Language' : 'en-US,en;q=0.5',
                     'Accept-Encoding' : 'gzip, deflate, br',
                     'x-odesk-user-agent' : 'oDesk LM',
                     'x-requested-with': 'XMLHttpRequest',
@@ -145,7 +134,13 @@ def send_request(url, previous_url):
                     'Connection': 'keep-alive',
                     'TE': 'trailers'}
         try:
-            req = requests.get(url, headers = my_headers, cookies = cookies_jar, proxies = proxy_dict, verify = mitm_cert_path)
+            if proxy == 'no':
+                #default SSL
+                SSL_verify = True 
+            else:
+                #mitm proxy SSL
+                SSL_verify = mitm_cert_path
+            req = requests.get(url, headers = my_headers, cookies = cookies_jar, proxies = proxy_dict, verify = SSL_verify)
             req.connection.close()
             
             if req.status_code == requests.codes.ok: 

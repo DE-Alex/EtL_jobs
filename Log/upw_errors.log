@@ -1,0 +1,458 @@
+2023-09-26T09:02:25+03:00
+Traceback (most recent call last):
+  File "/home/jack/upwork_scanner/cookies_mod.py", line 24, in read_cookies_sqlight
+    cursor.execute(query)
+sqlite3.OperationalError: database is locked
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/jack/upwork_scanner/1_check_new_jobs.py", line 66, in check_new_jobs
+    req = requests_upwork.send_request(url_p90, start_url)
+  File "/home/jack/upwork_scanner/requests_upwork.py", line 125, in send_request
+    cookies = cookies_mod.select_cookies()
+  File "/home/jack/upwork_scanner/cookies_mod.py", line 59, in select_cookies
+    result_1 = read_cookies_sqlight()
+  File "/home/jack/upwork_scanner/cookies_mod.py", line 27, in read_cookies_sqlight
+    print('In command: ', action)
+NameError: name 'action' is not defined
+
+2023-09-26T09:47:34+03:00
+Traceback (most recent call last):
+  File "/home/jack/upwork_scanner/env/lib/python3.10/site-packages/requests/models.py", line 971, in json
+    return complexjson.loads(self.text, **kwargs)
+  File "/usr/lib/python3.10/json/__init__.py", line 346, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python3.10/json/decoder.py", line 337, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python3.10/json/decoder.py", line 355, in raw_decode
+    raise JSONDecodeError("Expecting value", s, err.value) from None
+json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/jack/upwork_scanner/1_check_new_jobs.py", line 67, in check_new_jobs
+    json_data = req.json()
+  File "/home/jack/upwork_scanner/env/lib/python3.10/site-packages/requests/models.py", line 975, in json
+    raise RequestsJSONDecodeError(e.msg, e.doc, e.pos)
+requests.exceptions.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+
+2023-09-26T09:51:06+03:00
+Traceback (most recent call last):
+  File "/home/jack/upwork_scanner/env/lib/python3.10/site-packages/requests/models.py", line 971, in json
+    return complexjson.loads(self.text, **kwargs)
+  File "/usr/lib/python3.10/json/__init__.py", line 346, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python3.10/json/decoder.py", line 337, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python3.10/json/decoder.py", line 355, in raw_decode
+    raise JSONDecodeError("Expecting value", s, err.value) from None
+json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/jack/upwork_scanner/1_check_new_jobs.py", line 67, in check_new_jobs
+    json_data = req.json()
+  File "/home/jack/upwork_scanner/env/lib/python3.10/site-packages/requests/models.py", line 975, in json
+    raise RequestsJSONDecodeError(e.msg, e.doc, e.pos)
+requests.exceptions.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+
+2023-09-26T09:55:38+03:00
+Traceback (most recent call last):
+  File "/home/jack/upwork_scanner/env/lib/python3.10/site-packages/requests/models.py", line 971, in json
+    return complexjson.loads(self.text, **kwargs)
+  File "/usr/lib/python3.10/json/__init__.py", line 346, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python3.10/json/decoder.py", line 337, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python3.10/json/decoder.py", line 355, in raw_decode
+    raise JSONDecodeError("Expecting value", s, err.value) from None
+json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/jack/upwork_scanner/1_check_new_jobs.py", line 67, in check_new_jobs
+    json_data = req.json()
+  File "/home/jack/upwork_scanner/env/lib/python3.10/site-packages/requests/models.py", line 975, in json
+    raise RequestsJSONDecodeError(e.msg, e.doc, e.pos)
+requests.exceptions.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+
+2023-09-26T10:01:45+03:00
+Traceback (most recent call last):
+  File "/home/jack/upwork_scanner/env/lib/python3.10/site-packages/requests/models.py", line 971, in json
+    return complexjson.loads(self.text, **kwargs)
+  File "/usr/lib/python3.10/json/__init__.py", line 346, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python3.10/json/decoder.py", line 337, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python3.10/json/decoder.py", line 355, in raw_decode
+    raise JSONDecodeError("Expecting value", s, err.value) from None
+json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/jack/upwork_scanner/1_check_new_jobs.py", line 67, in check_new_jobs
+    json_data = req.json()
+  File "/home/jack/upwork_scanner/env/lib/python3.10/site-packages/requests/models.py", line 975, in json
+    raise RequestsJSONDecodeError(e.msg, e.doc, e.pos)
+requests.exceptions.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+
+2023-09-26T10:05:02+03:00
+Traceback (most recent call last):
+  File "/home/jack/upwork_scanner/1_check_new_jobs.py", line 68, in check_new_jobs
+    req = requests_upwork.send_request(url_p90, start_url)
+  File "/home/jack/upwork_scanner/requests_upwork.py", line 147, in send_request
+    print(headers)#@@@@@@@@@
+NameError: name 'headers' is not defined
+
+2023-09-26T10:05:51+03:00
+Traceback (most recent call last):
+  File "/home/jack/upwork_scanner/env/lib/python3.10/site-packages/requests/models.py", line 971, in json
+    return complexjson.loads(self.text, **kwargs)
+  File "/usr/lib/python3.10/json/__init__.py", line 346, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python3.10/json/decoder.py", line 337, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python3.10/json/decoder.py", line 355, in raw_decode
+    raise JSONDecodeError("Expecting value", s, err.value) from None
+json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/jack/upwork_scanner/1_check_new_jobs.py", line 69, in check_new_jobs
+    json_data = req.json()
+  File "/home/jack/upwork_scanner/env/lib/python3.10/site-packages/requests/models.py", line 975, in json
+    raise RequestsJSONDecodeError(e.msg, e.doc, e.pos)
+requests.exceptions.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+
+2023-09-26T10:07:51+03:00
+Traceback (most recent call last):
+  File "/home/jack/upwork_scanner/env/lib/python3.10/site-packages/requests/models.py", line 971, in json
+    return complexjson.loads(self.text, **kwargs)
+  File "/usr/lib/python3.10/json/__init__.py", line 346, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python3.10/json/decoder.py", line 337, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python3.10/json/decoder.py", line 355, in raw_decode
+    raise JSONDecodeError("Expecting value", s, err.value) from None
+json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/jack/upwork_scanner/1_check_new_jobs.py", line 69, in check_new_jobs
+    json_data = req.json()
+  File "/home/jack/upwork_scanner/env/lib/python3.10/site-packages/requests/models.py", line 975, in json
+    raise RequestsJSONDecodeError(e.msg, e.doc, e.pos)
+requests.exceptions.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+
+2023-09-26T10:12:45+03:00
+Traceback (most recent call last):
+  File "/home/jack/upwork_scanner/env/lib/python3.10/site-packages/urllib3/connectionpool.py", line 467, in _make_request
+    self._validate_conn(conn)
+  File "/home/jack/upwork_scanner/env/lib/python3.10/site-packages/urllib3/connectionpool.py", line 1092, in _validate_conn
+    conn.connect()
+  File "/home/jack/upwork_scanner/env/lib/python3.10/site-packages/urllib3/connection.py", line 642, in connect
+    sock_and_verified = _ssl_wrap_socket_and_match_hostname(
+  File "/home/jack/upwork_scanner/env/lib/python3.10/site-packages/urllib3/connection.py", line 783, in _ssl_wrap_socket_and_match_hostname
+    ssl_sock = ssl_wrap_socket(
+  File "/home/jack/upwork_scanner/env/lib/python3.10/site-packages/urllib3/util/ssl_.py", line 469, in ssl_wrap_socket
+    ssl_sock = _ssl_wrap_socket_impl(sock, context, tls_in_tls, server_hostname)
+  File "/home/jack/upwork_scanner/env/lib/python3.10/site-packages/urllib3/util/ssl_.py", line 513, in _ssl_wrap_socket_impl
+    return ssl_context.wrap_socket(sock, server_hostname=server_hostname)
+  File "/usr/lib/python3.10/ssl.py", line 513, in wrap_socket
+    return self.sslsocket_class._create(
+  File "/usr/lib/python3.10/ssl.py", line 1071, in _create
+    self.do_handshake()
+  File "/usr/lib/python3.10/ssl.py", line 1342, in do_handshake
+    self._sslobj.do_handshake()
+ssl.SSLCertVerificationError: [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1007)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/jack/upwork_scanner/env/lib/python3.10/site-packages/urllib3/connectionpool.py", line 790, in urlopen
+    response = self._make_request(
+  File "/home/jack/upwork_scanner/env/lib/python3.10/site-packages/urllib3/connectionpool.py", line 491, in _make_request
+    raise new_e
+urllib3.exceptions.SSLError: [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1007)
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/jack/upwork_scanner/env/lib/python3.10/site-packages/requests/adapters.py", line 486, in send
+    resp = conn.urlopen(
+  File "/home/jack/upwork_scanner/env/lib/python3.10/site-packages/urllib3/connectionpool.py", line 844, in urlopen
+    retries = retries.increment(
+  File "/home/jack/upwork_scanner/env/lib/python3.10/site-packages/urllib3/util/retry.py", line 515, in increment
+    raise MaxRetryError(_pool, url, reason) from reason  # type: ignore[arg-type]
+urllib3.exceptions.MaxRetryError: HTTPSConnectionPool(host='www.upwork.com', port=443): Max retries exceeded with url: /ab/jobs/search/url?per_page=50&sort=recency&page=90 (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1007)')))
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/jack/upwork_scanner/1_check_new_jobs.py", line 68, in check_new_jobs
+    req = requests_upwork.send_request(url_p90, start_url)
+  File "/home/jack/upwork_scanner/requests_upwork.py", line 151, in send_request
+    req = requests.get(url, headers = my_headers, cookies = cookies_jar, proxies = proxy_dict, verify = mitm_cert_path)
+  File "/home/jack/upwork_scanner/env/lib/python3.10/site-packages/requests/api.py", line 73, in get
+    return request("get", url, params=params, **kwargs)
+  File "/home/jack/upwork_scanner/env/lib/python3.10/site-packages/requests/api.py", line 59, in request
+    return session.request(method=method, url=url, **kwargs)
+  File "/home/jack/upwork_scanner/env/lib/python3.10/site-packages/requests/sessions.py", line 589, in request
+    resp = self.send(prep, **send_kwargs)
+  File "/home/jack/upwork_scanner/env/lib/python3.10/site-packages/requests/sessions.py", line 703, in send
+    r = adapter.send(request, **kwargs)
+  File "/home/jack/upwork_scanner/env/lib/python3.10/site-packages/requests/adapters.py", line 517, in send
+    raise SSLError(e, request=request)
+requests.exceptions.SSLError: HTTPSConnectionPool(host='www.upwork.com', port=443): Max retries exceeded with url: /ab/jobs/search/url?per_page=50&sort=recency&page=90 (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1007)')))
+
+2023-09-26T11:30:02+03:00
+Traceback (most recent call last):
+  File "/home/jack/upwork_scanner/env/lib/python3.10/site-packages/requests/models.py", line 971, in json
+    return complexjson.loads(self.text, **kwargs)
+  File "/usr/lib/python3.10/json/__init__.py", line 346, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python3.10/json/decoder.py", line 337, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python3.10/json/decoder.py", line 355, in raw_decode
+    raise JSONDecodeError("Expecting value", s, err.value) from None
+json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/jack/upwork_scanner/1_check_new_jobs.py", line 67, in check_new_jobs
+    json_data = req.json()
+  File "/home/jack/upwork_scanner/env/lib/python3.10/site-packages/requests/models.py", line 975, in json
+    raise RequestsJSONDecodeError(e.msg, e.doc, e.pos)
+requests.exceptions.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+
+2023-09-26T12:13:31+03:00
+Traceback (most recent call last):
+  File "/home/jack/upwork_scanner/env/lib/python3.10/site-packages/requests/models.py", line 971, in json
+    return complexjson.loads(self.text, **kwargs)
+  File "/usr/lib/python3.10/json/__init__.py", line 346, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python3.10/json/decoder.py", line 337, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python3.10/json/decoder.py", line 355, in raw_decode
+    raise JSONDecodeError("Expecting value", s, err.value) from None
+json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/jack/upwork_scanner/1_check_new_jobs.py", line 67, in check_new_jobs
+    json_data = req.json()
+  File "/home/jack/upwork_scanner/env/lib/python3.10/site-packages/requests/models.py", line 975, in json
+    raise RequestsJSONDecodeError(e.msg, e.doc, e.pos)
+requests.exceptions.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+
+2023-09-26T12:24:30+03:00
+Traceback (most recent call last):
+  File "/home/jack/upwork_scanner/env/lib/python3.10/site-packages/requests/models.py", line 971, in json
+    return complexjson.loads(self.text, **kwargs)
+  File "/usr/lib/python3.10/json/__init__.py", line 346, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python3.10/json/decoder.py", line 337, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python3.10/json/decoder.py", line 355, in raw_decode
+    raise JSONDecodeError("Expecting value", s, err.value) from None
+json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/jack/upwork_scanner/1_check_new_jobs.py", line 67, in check_new_jobs
+    json_data = req.json()
+  File "/home/jack/upwork_scanner/env/lib/python3.10/site-packages/requests/models.py", line 975, in json
+    raise RequestsJSONDecodeError(e.msg, e.doc, e.pos)
+requests.exceptions.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+
+2023-09-26T18:53:09+03:00
+Traceback (most recent call last):
+  File "/home/jack/upwork_scanner/env/lib/python3.10/site-packages/urllib3/connectionpool.py", line 467, in _make_request
+    self._validate_conn(conn)
+  File "/home/jack/upwork_scanner/env/lib/python3.10/site-packages/urllib3/connectionpool.py", line 1092, in _validate_conn
+    conn.connect()
+  File "/home/jack/upwork_scanner/env/lib/python3.10/site-packages/urllib3/connection.py", line 642, in connect
+    sock_and_verified = _ssl_wrap_socket_and_match_hostname(
+  File "/home/jack/upwork_scanner/env/lib/python3.10/site-packages/urllib3/connection.py", line 783, in _ssl_wrap_socket_and_match_hostname
+    ssl_sock = ssl_wrap_socket(
+  File "/home/jack/upwork_scanner/env/lib/python3.10/site-packages/urllib3/util/ssl_.py", line 469, in ssl_wrap_socket
+    ssl_sock = _ssl_wrap_socket_impl(sock, context, tls_in_tls, server_hostname)
+  File "/home/jack/upwork_scanner/env/lib/python3.10/site-packages/urllib3/util/ssl_.py", line 513, in _ssl_wrap_socket_impl
+    return ssl_context.wrap_socket(sock, server_hostname=server_hostname)
+  File "/usr/lib/python3.10/ssl.py", line 513, in wrap_socket
+    return self.sslsocket_class._create(
+  File "/usr/lib/python3.10/ssl.py", line 1071, in _create
+    self.do_handshake()
+  File "/usr/lib/python3.10/ssl.py", line 1342, in do_handshake
+    self._sslobj.do_handshake()
+ssl.SSLCertVerificationError: [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1007)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/jack/upwork_scanner/env/lib/python3.10/site-packages/urllib3/connectionpool.py", line 790, in urlopen
+    response = self._make_request(
+  File "/home/jack/upwork_scanner/env/lib/python3.10/site-packages/urllib3/connectionpool.py", line 491, in _make_request
+    raise new_e
+urllib3.exceptions.SSLError: [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1007)
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/jack/upwork_scanner/env/lib/python3.10/site-packages/requests/adapters.py", line 486, in send
+    resp = conn.urlopen(
+  File "/home/jack/upwork_scanner/env/lib/python3.10/site-packages/urllib3/connectionpool.py", line 844, in urlopen
+    retries = retries.increment(
+  File "/home/jack/upwork_scanner/env/lib/python3.10/site-packages/urllib3/util/retry.py", line 515, in increment
+    raise MaxRetryError(_pool, url, reason) from reason  # type: ignore[arg-type]
+urllib3.exceptions.MaxRetryError: HTTPSConnectionPool(host='www.upwork.com', port=443): Max retries exceeded with url: /ab/jobs/search/url?per_page=50&sort=recency&page=90 (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1007)')))
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/jack/upwork_scanner/1_check_new_jobs.py", line 66, in check_new_jobs
+    req = requests_upwork.send_request(url_p90, start_url)
+  File "/home/jack/upwork_scanner/requests_upwork.py", line 148, in send_request
+    req = requests.get(url, headers = my_headers, cookies = cookies_jar, proxies = proxy_dict, verify = mitm_cert_path)
+  File "/home/jack/upwork_scanner/env/lib/python3.10/site-packages/requests/api.py", line 73, in get
+    return request("get", url, params=params, **kwargs)
+  File "/home/jack/upwork_scanner/env/lib/python3.10/site-packages/requests/api.py", line 59, in request
+    return session.request(method=method, url=url, **kwargs)
+  File "/home/jack/upwork_scanner/env/lib/python3.10/site-packages/requests/sessions.py", line 589, in request
+    resp = self.send(prep, **send_kwargs)
+  File "/home/jack/upwork_scanner/env/lib/python3.10/site-packages/requests/sessions.py", line 703, in send
+    r = adapter.send(request, **kwargs)
+  File "/home/jack/upwork_scanner/env/lib/python3.10/site-packages/requests/adapters.py", line 517, in send
+    raise SSLError(e, request=request)
+requests.exceptions.SSLError: HTTPSConnectionPool(host='www.upwork.com', port=443): Max retries exceeded with url: /ab/jobs/search/url?per_page=50&sort=recency&page=90 (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1007)')))
+
+2023-09-26T18:56:27+03:00
+Traceback (most recent call last):
+  File "/home/jack/upwork_scanner/env/lib/python3.10/site-packages/urllib3/connectionpool.py", line 467, in _make_request
+    self._validate_conn(conn)
+  File "/home/jack/upwork_scanner/env/lib/python3.10/site-packages/urllib3/connectionpool.py", line 1092, in _validate_conn
+    conn.connect()
+  File "/home/jack/upwork_scanner/env/lib/python3.10/site-packages/urllib3/connection.py", line 642, in connect
+    sock_and_verified = _ssl_wrap_socket_and_match_hostname(
+  File "/home/jack/upwork_scanner/env/lib/python3.10/site-packages/urllib3/connection.py", line 783, in _ssl_wrap_socket_and_match_hostname
+    ssl_sock = ssl_wrap_socket(
+  File "/home/jack/upwork_scanner/env/lib/python3.10/site-packages/urllib3/util/ssl_.py", line 469, in ssl_wrap_socket
+    ssl_sock = _ssl_wrap_socket_impl(sock, context, tls_in_tls, server_hostname)
+  File "/home/jack/upwork_scanner/env/lib/python3.10/site-packages/urllib3/util/ssl_.py", line 513, in _ssl_wrap_socket_impl
+    return ssl_context.wrap_socket(sock, server_hostname=server_hostname)
+  File "/usr/lib/python3.10/ssl.py", line 513, in wrap_socket
+    return self.sslsocket_class._create(
+  File "/usr/lib/python3.10/ssl.py", line 1071, in _create
+    self.do_handshake()
+  File "/usr/lib/python3.10/ssl.py", line 1342, in do_handshake
+    self._sslobj.do_handshake()
+ssl.SSLCertVerificationError: [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1007)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/jack/upwork_scanner/env/lib/python3.10/site-packages/urllib3/connectionpool.py", line 790, in urlopen
+    response = self._make_request(
+  File "/home/jack/upwork_scanner/env/lib/python3.10/site-packages/urllib3/connectionpool.py", line 491, in _make_request
+    raise new_e
+urllib3.exceptions.SSLError: [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1007)
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/jack/upwork_scanner/env/lib/python3.10/site-packages/requests/adapters.py", line 486, in send
+    resp = conn.urlopen(
+  File "/home/jack/upwork_scanner/env/lib/python3.10/site-packages/urllib3/connectionpool.py", line 844, in urlopen
+    retries = retries.increment(
+  File "/home/jack/upwork_scanner/env/lib/python3.10/site-packages/urllib3/util/retry.py", line 515, in increment
+    raise MaxRetryError(_pool, url, reason) from reason  # type: ignore[arg-type]
+urllib3.exceptions.MaxRetryError: HTTPSConnectionPool(host='www.upwork.com', port=443): Max retries exceeded with url: /ab/jobs/search/url?per_page=50&sort=recency&page=90 (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1007)')))
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/jack/upwork_scanner/1_check_new_jobs.py", line 66, in check_new_jobs
+    req = requests_upwork.send_request(url_p90, start_url)
+  File "/home/jack/upwork_scanner/requests_upwork.py", line 152, in send_request
+    req = requests.get(url, headers = my_headers, cookies = cookies_jar, proxies = proxy_dict, verify = mitm_cert_path)
+  File "/home/jack/upwork_scanner/env/lib/python3.10/site-packages/requests/api.py", line 73, in get
+    return request("get", url, params=params, **kwargs)
+  File "/home/jack/upwork_scanner/env/lib/python3.10/site-packages/requests/api.py", line 59, in request
+    return session.request(method=method, url=url, **kwargs)
+  File "/home/jack/upwork_scanner/env/lib/python3.10/site-packages/requests/sessions.py", line 589, in request
+    resp = self.send(prep, **send_kwargs)
+  File "/home/jack/upwork_scanner/env/lib/python3.10/site-packages/requests/sessions.py", line 703, in send
+    r = adapter.send(request, **kwargs)
+  File "/home/jack/upwork_scanner/env/lib/python3.10/site-packages/requests/adapters.py", line 517, in send
+    raise SSLError(e, request=request)
+requests.exceptions.SSLError: HTTPSConnectionPool(host='www.upwork.com', port=443): Max retries exceeded with url: /ab/jobs/search/url?per_page=50&sort=recency&page=90 (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1007)')))
+
+2023-09-26T20:09:14+03:00
+Traceback (most recent call last):
+  File "/home/jack/upwork_scanner/1_check_new_jobs.py", line 87, in check_new_jobs
+    req_list, _ = requests_upwork.form_requests_list(occupations, start_url)
+  File "/home/jack/upwork_scanner/requests_upwork.py", line 63, in form_requests_list
+    previous_url, req_list = requests_generator(i, previous_url, params, occupations, filters)
+  File "/home/jack/upwork_scanner/requests_upwork.py", line 73, in requests_generator
+    for item in items:
+TypeError: 'NoneType' object is not iterable
+
+2023-09-26T20:15:05+03:00
+Traceback (most recent call last):
+  File "/home/jack/upwork_scanner/1_check_new_jobs.py", line 88, in check_new_jobs
+    print(len(occupations))
+TypeError: object of type 'NoneType' has no len()
+
+2023-09-27T06:25:33+03:00
+Traceback (most recent call last):
+  File "/home/jack/upwork_scanner/1_check_new_jobs.py", line 91, in check_new_jobs
+TypeError: object of type 'NoneType' has no len()
+
+2023-09-27T06:59:37+03:00
+Traceback (most recent call last):
+  File "/home/jack/upwork_scanner/1_check_new_jobs.py", line 95, in check_new_jobs
+    print(len(occupations))
+TypeError: object of type 'NoneType' has no len()
+
+2023-09-27T09:23:53+03:00
+Traceback (most recent call last):
+  File "/home/jack/upwork_scanner/1_check_new_jobs.py", line 87, in check_new_jobs
+    req_list, _ = requests_upwork.form_requests_list(json_data, start_url)
+  File "/home/jack/upwork_scanner/requests_upwork.py", line 63, in form_requests_list
+    previous_url, req_list = requests_generator(i, previous_url, params, occupations, filters)
+  File "/home/jack/upwork_scanner/requests_upwork.py", line 75, in requests_generator
+    params[i] = item['uid'] #uid of category/subcategory
+TypeError: string indices must be integers
+
+2023-09-27T09:52:27+03:00
+Traceback (most recent call last):
+  File "/home/jack/upwork_scanner/1_check_new_jobs.py", line 87, in check_new_jobs
+    req_list, _ = requests_upwork.form_requests_list(json_data, start_url)
+  File "/home/jack/upwork_scanner/requests_upwork.py", line 53, in form_requests_list
+    subcategories = parse_json.parse_subcats_uids(json_data)
+  File "/home/jack/upwork_scanner/parse_json.py", line 40, in parse_subcats_uids
+    for subcat in categories['subcategories']:
+TypeError: list indices must be integers or slices, not str
+
+2023-09-27T09:58:39+03:00
+Traceback (most recent call last):
+  File "/home/jack/upwork_scanner/1_check_new_jobs.py", line 87, in check_new_jobs
+    req_list, _ = requests_upwork.form_requests_list(json_data, start_url)
+  File "/home/jack/upwork_scanner/requests_upwork.py", line 62, in form_requests_list
+    req_list, previous_url = requests_generator(i, previous_url, params, filters)
+  File "/home/jack/upwork_scanner/requests_upwork.py", line 80, in requests_generator
+    req_list, previous_url = requests_generator(i+1, previous_url, params, filters)
+  File "/home/jack/upwork_scanner/requests_upwork.py", line 81, in requests_generator
+    req_list.extend(req)
+UnboundLocalError: local variable 'req' referenced before assignment
+

@@ -28,7 +28,9 @@ def check_ip():
     while True:
         try:
             my_ip = request_service()
-            proxy_ip = request_service(proxy)
+            if proxy != 'no':
+                proxy_ip = request_service(proxy)
+            else: proxy_ip = 'no proxy'
             break
         except requests.exceptions.ConnectionError:
             print('ip check failed')
@@ -64,7 +66,7 @@ It was used {ip_logs[proxy_ip]-1} time(s) before.
 if __name__ == '__main__':
     while True:
         check_ip()
-        time.sleep(3600)
+        time.sleep(5)
         
         
     

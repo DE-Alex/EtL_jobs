@@ -82,8 +82,7 @@ def check_new_jobs():
             print(f'FullUpdate: crawl all jobs with filters')
             N_jobs = parse_json.total_jobs(json_data)
             print(f"Total {N_jobs} jobs found.")
-            occupations = parse_json.jobs_by_occupations(json_data)
-            req_list, _ = requests_upwork.form_requests_list(occupations, start_url) 
+            req_list, _ = requests_upwork.form_requests_list(json_data, start_url) 
         
         #save requests to file
         time_start_str = datetime.strftime(time_start.replace(microsecond = 0), filename_date_format) #datetime to str in filename format 
