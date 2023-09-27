@@ -1,7 +1,6 @@
 *.pyc
 *.conf
 *.*~
-python/
 mitm/
 Temp/
-.env/
+env/
