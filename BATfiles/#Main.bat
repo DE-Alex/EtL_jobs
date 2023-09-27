@@ -1,4 +1,4 @@
 @echo off
-D:\Shapovalov\svoe\Python\PY\Parser4\Scripts\python.exe D:\Shapovalov\svoe\Python\PY\Parser5\#main.py
+D:\Shapovalov\svoe\Python\PY\Parser6\env\Scripts\python.exe D:\Shapovalov\svoe\Python\PY\Parser6\#main.py
 @echo on
 
