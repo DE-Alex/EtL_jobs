@@ -1,9 +1,3 @@
-#In case of faults:
-#0) clear browser's cookies (status code 502)
-#1) check user_agent in browser (may be it changes after browser update)
-#2) function that generates requests (Upwork changes it frequently)
-#3) check Headers in requests_upwork and browsers Header 
-
 import configparser
 import sys, os
 import traceback
