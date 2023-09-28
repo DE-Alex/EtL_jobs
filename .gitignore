@@ -1,6 +1,7 @@
 *.pyc
 *.conf
 *.*~
+win_start.*
 mitm/
 Temp/
 env/

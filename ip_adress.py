@@ -60,6 +60,8 @@ My IP             :{my_ip}
 My IP (with proxy):{proxy_ip}
 It was used {ip_logs[proxy_ip]-1} time(s) before.
 ================================''')
+    if my_ip != '167.71.50.189':
+        input('pause')
     return proxy_ip
     
 
