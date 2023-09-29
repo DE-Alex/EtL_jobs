@@ -2,7 +2,6 @@ backports.zoneinfo==0.2.1
 Brotli==1.0.9
 certifi==2023.7.22
 charset-normalizer==3.2.0
-configparser==6.0.0
 idna==3.4
 lz4==4.3.2
 psycopg==3.1.10

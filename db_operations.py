@@ -22,7 +22,7 @@ def connect_to_db():
             + " host=" + host,
             port = port)
     except psycopg.OperationalError as e:
-        print(e)
+        print('psycopg.OperationalError:', e)
         return exit(1)
     return conn
         

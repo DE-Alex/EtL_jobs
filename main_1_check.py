@@ -1,9 +1,3 @@
-#In case of faults:
-#0) clear browser's cookies (status code 502)
-#1) check user_agent in browser (may be it changes after browser update)
-#2) function that generates requests (Upwork changes it frequently)
-#3) check Headers in requests_upwork and browsers Header 
-
 import configparser
 import sys, os
 import traceback
@@ -82,8 +76,7 @@ def check_new_jobs():
             print(f'FullUpdate: crawl all jobs with filters')
             N_jobs = parse_json.total_jobs(json_data)
             print(f"Total {N_jobs} jobs found.")
-            occupations = parse_json.jobs_by_occupations(json_data)
-            req_list, _ = requests_upwork.form_requests_list(occupations, start_url) 
+            req_list, _ = requests_upwork.form_requests_list(json_data, start_url) 
         
         #save requests to file
         time_start_str = datetime.strftime(time_start.replace(microsecond = 0), filename_date_format) #datetime to str in filename format 

@@ -1,9 +1,23 @@
+import sys
 import sqlite3
 import lz4.block as lz4
 import sqlite3
+import configparser
+from pathlib import Path
+
+config = configparser.ConfigParser()
+config.read(Path(sys.path[0], 'pipeline.conf'))
+cookies_sqlight_path = config["parser_config"]["FireFox_cookies_sqlight_path"]
+cookies_lz4_path = config["parser_config"]["FireFox_cookies_lz4_path"]
 
 def read_cookies_sqlight():
-    path = r'C:\Users\User\AppData\Roaming\Mozilla\Firefox\Profiles\9abm4non.default-release\cookies.sqlite'
+    #In Linux FireFox block sqlite file with cookies
+    #Let's copy file to read cookies later
+    source_path = Path(cookies_sqlight_path)
+    tmp_path = Path(sys.path[0], 'Temp', 'cookies.sqlite')
+    tmp_path.write_bytes(source_path.read_bytes())
+    path = str(tmp_path)
+   
     query = '''SELECT name, 
                       value,
                       host
@@ -16,9 +30,8 @@ def read_cookies_sqlight():
         cursor.execute(query)
         result = cursor.fetchall()
     except sqlite3.DatabaseError as err:
-        print('In command: ', action)
+        print('In command: ', query)
         print('Error type: ', err)
-        cursor.rollback()
         result = False
     finally:
         cursor.close()
@@ -26,7 +39,7 @@ def read_cookies_sqlight():
     return result
         
 def read_cookies_json():
-    path = r'C:\Users\User\AppData\Roaming\Mozilla\Firefox\Profiles\9abm4non.default-release\sessionstore-backups\recovery.jsonlz4'
+    path = cookies_lz4_path
     while True:
         try:
             file = open(path, "rb")
@@ -69,4 +82,5 @@ def select_cookies():
     return upw_cookies
 
 if __name__ == '__main__':
-    pass
+    cookies = select_cookies()
+    print('cookies:', len(cookies))

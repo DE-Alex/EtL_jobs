@@ -29,9 +29,13 @@ def total_jobs(json_data):
     total = json_data['searchResults']['paging']['total']
     return total
     
-def jobs_by_occupations(json_data):
-    occupations = json_data['searchResults']['facets']['occupations']
-    return occupations
+def parse_subcats_uids(json_data):
+    subcategories = []
+    categories = json_data['filters']['categories']
+    for cat in categories:
+        for subcat in cat['subcategories']:
+            subcategories.append(subcat['value'])
+    return subcategories
     
 def delete_useless_keys(jobs):
     for job in jobs:
