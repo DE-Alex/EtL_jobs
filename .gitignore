@@ -4,5 +4,6 @@
 win_start.*
 mitm/
 Temp/
+Log/
 env/
 python/
