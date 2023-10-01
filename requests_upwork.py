@@ -157,8 +157,8 @@ def send_request(url, previous_url):
                     print(f'{i}: status code {req.status_code}. Paused for 0.5 min.')
                     time.sleep(30)
             if i >= 6:
-                print('Paused for 60 min.')
-                time.sleep(3600)
+                print('Paused for 30 min.')
+                time.sleep(1800)
                 i = 0               
         except requests.exceptions.ProxyError as e: 
             print(f'{i}: ProxyError: ', e)
