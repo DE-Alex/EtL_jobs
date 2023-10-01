@@ -21,5 +21,6 @@ The data sources are: the API of the site https://www.upwork.com (an internation
 * Workflow orchestration: Apache Airflow 2.7.1
 ---
 #### EtL diagram / Схема EtL процесса
-![EtL_scheme](https://github.com/DE-Alex/EtL_jobs/assets/139635578/b2951e32-e7fd-463c-86aa-0babd5af3baa)
+![EtL_scheme](https://github.com/DE-Alex/EtL_jobs/assets/139635578/6ad1f7af-1b75-499b-a3ec-31fb93b926d6)
+
 
