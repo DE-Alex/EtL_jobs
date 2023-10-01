@@ -1,8 +1,9 @@
 *.pyc
 *.conf
 *.*~
-win_start.*
 mitm/
-temp/*.*
-log/*.*
+temp/
+log/
 env/
+res
+win_bat
