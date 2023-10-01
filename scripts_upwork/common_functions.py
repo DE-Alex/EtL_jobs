@@ -1,5 +1,4 @@
-import sys
-import os
+import sys, os
 import glob
 from pathlib import Path
 from datetime import datetime

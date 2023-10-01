@@ -1,25 +1,27 @@
 import configparser
-import sys
+import os, sys
 import psycopg
 from pathlib import Path
 
-config = configparser.ConfigParser()
-config.read(Path(sys.path[0], 'pipeline.conf'))
 
-dbname = config["postgres_config"]["database"]
-user = config["postgres_config"]["username"]
-password = config["postgres_config"]["password"]
-host = config["postgres_config"]["host"]
-port = config["postgres_config"]["port"]
-table_name = config['upwork']['upwork_table']
+parent_dir = os.path.abspath(os.path.join(sys.path[0], '..'))
+config = configparser.ConfigParser()    
+config.read(Path(parent_dir, 'pipeline.conf'))
+
+dbname = config['postgres_config']['database']
+user = config['postgres_config']['username']
+password = config['postgres_config']['password']
+host = config['postgres_config']['host']
+port = config['postgres_config']['port']
+table_name = config['db_scheme']['upwork_table']
 
 def connect_to_db():
     try:
         conn = psycopg.connect(
-            "dbname=" + dbname
-            + " user=" + user
-            + " password=" + password
-            + " host=" + host,
+            'dbname=' + dbname
+            + ' user=' + user
+            + ' password=' + password
+            + ' host=' + host,
             port = port)
     except psycopg.OperationalError as e:
         print('psycopg.OperationalError:', e)
@@ -29,7 +31,7 @@ def connect_to_db():
 def id_from_db():
     conn = connect_to_db()
     with conn.cursor() as curs:
-        result = curs.execute(f"SELECT id FROM {table_name};").fetchall()
+        result = curs.execute(f'SELECT id FROM {table_name};').fetchall()
     conn.close()
     jobs_id = [item[0] for item in result]
     return jobs_id
@@ -37,7 +39,7 @@ def id_from_db():
 def col_names_from_db():
     conn = connect_to_db()
     with conn.cursor() as curs:
-        curs.execute(f"SELECT * FROM {table_name} LIMIT 0;")
+        curs.execute(f'SELECT * FROM {table_name} LIMIT 0;')
         columns = [desc[0] for desc in curs.description]
     conn.close()
     return columns
@@ -59,7 +61,7 @@ def drop_to_db(jobs, jobs_id):
                     cols_str = (', ').join([f'"{name}"' for name in columns]) #"quote" columns to escape lowercase by PostgreSQL
                     values = [job[key] for key in columns] #form set of values in order by columns
                     
-                    query = f"INSERT INTO {table_name} ({cols_str}) VALUES ({placeholders})RETURNING id;"
+                    query = f'INSERT INTO {table_name} ({cols_str}) VALUES ({placeholders})RETURNING id;'
                     curs.execute(query, values)
                     ins_id.append(curs.fetchone()[0])
                 conn.commit()
@@ -80,7 +82,7 @@ def drop_to_db(jobs, jobs_id):
                     placeholders = (', ').join([f'"{key}"=%s' for key in columns]) #"quote" columns to escape lowercase by PostgreSQL
                     values = [job[key] for key in columns] #form set of values in order by columns
 
-                    query = f"UPDATE {table_name} SET {placeholders} WHERE id = {job['id']} RETURNING id;"
+                    query = f'UPDATE {table_name} SET {placeholders} WHERE id = {job["id"]} RETURNING id;'
                     curs.execute(query, values)
                     upd_id.append(curs.fetchone()[0])
                 conn.commit()

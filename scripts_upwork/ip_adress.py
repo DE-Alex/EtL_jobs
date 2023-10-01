@@ -1,26 +1,27 @@
-import sys
+import os, sys
 import time
 import requests
 import configparser
 from pathlib import Path
 
-config = configparser.ConfigParser()
-config.read(Path(sys.path[0], 'pipeline.conf'))
-proxy = config['parser_config']['proxy']
+parent_dir = os.path.abspath(os.path.join(sys.path[0], '..'))
+config = configparser.ConfigParser() 
+config.read(Path(parent_dir, 'pipeline.conf'))
 
-logs_folder = Path(sys.path[0], config['parser_paths']['logs_folder'])
-ip_log_path = Path(logs_folder, config['parser_paths']['ip_file'])
+logs_folder = Path(parent_dir, config['general']['logs_folder'])
 
-mitm_folder = Path(sys.path[0], config['parser_paths']['mitm_folder'])
-mitm_cert_path = Path(mitm_folder, config['parser_paths']['mitm_certificate'])
+ip_log_path = Path(logs_folder, config['upwork']['ip_file'])
+mitm_folder = Path(config['upwork']['mitm_folder'])
+mitm_cert_path = Path(sys.path[0], mitm_folder, config['upwork']['mitm_certificate'])
+proxy = config['upwork']['proxy']
 
 def request_service(proxy_port = False):
     URL = 'https://api.ipify.org'
     if proxy_port == False: 
         ip = requests.get(URL).text
     else:
-        proxyDict = {"http" : f"http://{proxy_port}",
-                    "https" : f"https://{proxy_port}"}
+        proxyDict = {'http' : f'http://{proxy_port}',
+                    'https' : f'https://{proxy_port}'}
         ip = requests.get(URL, proxies = proxyDict, verify = mitm_cert_path).text
     return ip
 

@@ -1,7 +1,7 @@
 *.pyc
 *.conf
 *.*~
-mitm/
+scripts_upwork/mitm/
 temp/
 log/
 env/
