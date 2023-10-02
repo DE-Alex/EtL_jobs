@@ -2,8 +2,7 @@
 *.conf
 *.*~
 scripts_upwork/mitm/
-temp/*
-log/*.*
+working_materials/
 env/
 res
 win_bat
