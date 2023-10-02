@@ -3,7 +3,7 @@
 *.*~
 scripts_upwork/mitm/
 temp/
-log/
+log/*.*
 env/
 res
 win_bat
