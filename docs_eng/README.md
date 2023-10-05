@@ -1,3 +1,4 @@
+[По-русски](README.md) | In english
 #### EtL project to aggregate data about job vacancies from Upwork and HeadHunter
 #### About project
 EtL-project to keep track of new vacancies round-the-clock, ingest, process and load them into the database.
