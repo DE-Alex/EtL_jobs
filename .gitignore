@@ -1,8 +1,8 @@
 *.pyc
 *.conf
 *.*~
-win_start.*
-mitm/
-temp/*.*
-log/*.*
+scripts_upwork/mitm/
+working_materials/
 env/
+res
+win_bat

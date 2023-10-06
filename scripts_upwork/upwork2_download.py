@@ -5,14 +5,12 @@
 #3) check Headers in requests_upwork and browsers Header 
 
 import configparser
-import sys
-import os
+import sys, os
 import traceback
 import time
 from pathlib import Path
 from datetime import datetime, timedelta
 from dateutil.tz import tzutc, tzlocal
-
 tzlocal = tzlocal()
 tzutc = tzutc()
 
@@ -21,25 +19,26 @@ import db_operations
 import ip_adress
 import requests_upwork
 import parse_json
-#================General settings=========================
-config = configparser.ConfigParser()
-config.read(Path(sys.path[0], 'pipeline.conf'))
 
-proxy = config['parser_config']['proxy']
-filename_date_format = config['parser_config']['filename_date_format']
+parent_dir = os.path.abspath(os.path.join(sys.path[0], '..'))
+config = configparser.ConfigParser() 
+config.read(Path(parent_dir, 'pipeline.conf'))
 
-requests_filename = config['parser_paths']['requests_file']
-temp_folder = Path(sys.path[0], config['parser_paths']['temp_folder'])
-logs_folder = Path(sys.path[0], config['parser_paths']['logs_folder'])
-journal_path = Path(logs_folder, config['parser_paths']['journal_file'])
-err_path = Path(logs_folder, config['parser_paths']['errors_file']) 
+filename_date_format = config['general']['filename_date_format']
+temp_folder = Path(parent_dir, config['general']['temp_folder'])
+logs_folder = Path(parent_dir, config['general']['logs_folder'])
 
-dbname = config.get("postgres_config", "database")
-user = config.get("postgres_config", "username")
-password = config.get("postgres_config", "password")
-host = config.get("postgres_config", "host")
-port = config.get("postgres_config", "port")
-table_name = config.get('upwork', 'upwork_table')
+proxy = config['upwork']['proxy']
+requests_filename = config['upwork']['requests_file']
+journal_path = Path(logs_folder, config['upwork']['journal_file'])
+err_path = Path(logs_folder, config['upwork']['errors_file']) 
+
+dbname = config.get('postgres_config', 'database')
+user = config.get('postgres_config', 'username')
+password = config.get('postgres_config', 'password')
+host = config.get('postgres_config', 'host')
+port = config.get('postgres_config', 'port')
+table_name = config.get('db_scheme', 'upwork_table')
   
 def download_jobs():
     #search for file with requests (urls to download)

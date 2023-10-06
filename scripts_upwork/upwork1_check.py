@@ -13,18 +13,18 @@ import ip_adress
 import requests_upwork
 import parse_json
 
-#================General settings=========================
-config = configparser.ConfigParser()
-config.read(Path(sys.path[0], 'pipeline.conf'))
+parent_dir = os.path.abspath(os.path.join(sys.path[0], '..'))
+config = configparser.ConfigParser() 
+config.read(Path(parent_dir, 'pipeline.conf'))
 
-proxy = config['parser_config']['proxy']
-filename_date_format = config['parser_config']['filename_date_format']
-requests_filename = config['parser_paths']['requests_file']
+filename_date_format = config['general']['filename_date_format']
+temp_folder = Path(parent_dir, config['general']['temp_folder'])
+logs_folder = Path(parent_dir, config['general']['logs_folder'])
 
-temp_folder = Path(sys.path[0], config['parser_paths']['temp_folder'])
-logs_folder = Path(sys.path[0], config['parser_paths']['logs_folder'])
-err_path = Path(logs_folder, config['parser_paths']['errors_file'])
-journal_path = Path(logs_folder, config['parser_paths']['journal_file'])
+proxy = config['upwork']['proxy']
+requests_filename = config['upwork']['requests_file']
+err_path = Path(logs_folder, config['upwork']['errors_file'])
+journal_path = Path(logs_folder, config['upwork']['journal_file'])
 
 
 def check_new_jobs():
@@ -43,7 +43,7 @@ def check_new_jobs():
         journal_recs = [i for i in result if i != '']
     except FileNotFoundError as e:
         print(f'{journal_path} not found.')
-        journal_recs = ['01.01.1970 00.00']
+        journal_recs = ['1970-01-01T00:00:00+03:00']
     last_check_loc = datetime.fromisoformat(journal_recs[-1])
     last_check_utc = last_check_loc.astimezone(tzutc) #move to utc timezone
     print('last check (local):', datetime.strftime(last_check_loc, '%Y.%m.%d %H:%M'))

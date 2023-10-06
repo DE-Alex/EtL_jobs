@@ -1,4 +1,4 @@
-import sys
+import os, sys
 import configparser
 import pickle
 from pathlib import Path
@@ -8,12 +8,15 @@ from datetime import datetime
 tzlocal = tzlocal()
 tzutc = tzutc()
 
-#read parser configs
-config = configparser.ConfigParser()
-config.read(Path(sys.path[0], 'pipeline.conf'))
-filename_date_format = config['parser_config']['filename_date_format']
-logs_folder = Path(sys.path[0], config['parser_paths']['logs_folder'])
-err_path = Path(logs_folder, config['parser_paths']['errors_file']) 
+parent_dir = os.path.abspath(os.path.join(sys.path[0], '..'))
+config = configparser.ConfigParser() 
+config.read(Path(parent_dir, 'pipeline.conf'))
+
+filename_date_format = config['general']['filename_date_format']
+logs_folder = Path(parent_dir, config['general']['logs_folder'])
+
+folder = Path(config['upwork']['scripts_folder'])
+err_path = Path(logs_folder, config['upwork']['errors_file']) 
 
 #read useless keys to delete
 conf_keys = configparser.ConfigParser()

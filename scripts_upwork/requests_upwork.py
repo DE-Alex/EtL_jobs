@@ -1,5 +1,6 @@
 import math
-import sys, requests, time
+import os, sys
+import requests, time
 import configparser
 from pathlib import Path
 from datetime import datetime
@@ -10,18 +11,18 @@ import parse_json
 import cookies_mod
 import mitm.change_mitm_headers
 
-config = configparser.ConfigParser()
-config.read(Path(sys.path[0], 'pipeline.conf'))
+parent_dir = os.path.abspath(os.path.join(sys.path[0], '..'))
+config = configparser.ConfigParser() 
+config.read(Path(parent_dir, 'pipeline.conf'))
 
-proxy = config['parser_config']['proxy']
-filename_date_format = config['parser_config']['filename_date_format']
-user_agent = config['parser_config']['user_agent']
+filename_date_format = config['general']['filename_date_format']
+logs_folder = Path(parent_dir, config['general']['logs_folder'])
 
-logs_folder = Path(sys.path[0], config['parser_paths']['logs_folder'])
-err_path = Path(logs_folder, config['parser_paths']['errors_file'])
-
-mitm_folder = Path(sys.path[0], config['parser_paths']['mitm_folder'])
-mitm_cert_path = Path(mitm_folder, config['parser_paths']['mitm_certificate'])
+err_path = Path(logs_folder, config['upwork']['errors_file'])
+user_agent = config['upwork']['user_agent']
+mitm_folder = Path(parent_dir, config['upwork']['mitm_folder'])
+mitm_cert_path = Path(mitm_folder, config['upwork']['mitm_certificate'])
+proxy = config['upwork']['proxy']
 
 mitm.change_mitm_headers.write_in(user_agent)
     
@@ -82,7 +83,7 @@ def requests_generator(i, previous_url, params, filters):
         else:
             if N >= 100:
                 N = 100
-                print(f"\nToo many jobs in subcat uid={p0} with jobType = {p1}, clientHires = {p2} proposals = {p3} duration_v3 = {p4} !")
+                print(f'\nToo many jobs in subcat uid={p0} with jobType = {p1}, clientHires = {p2} proposals = {p3} duration_v3 = {p4} !')
                 print('Load only first 5000 jobs')
                 import json
                 now = datetime.now(tzlocal).replace(microsecond = 0)
@@ -105,7 +106,7 @@ def send_request(url, previous_url):
     if proxy == 'no': 
         proxy_dict = {}
     else:
-        proxy_dict = {"http"  : f"http://{proxy}", "https" : f"https://{proxy}"}
+        proxy_dict = {'http': f'http://{proxy}', 'https': f'https://{proxy}'}
         
     time.sleep(3)
     i = 0
