@@ -4,5 +4,7 @@
 scripts_upwork/mitm/
 working_materials/
 env/
+log/
+temp/
 res
 win_bat
