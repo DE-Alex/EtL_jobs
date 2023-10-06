@@ -20,7 +20,7 @@ logs_folder = Path(parent_dir, config['general']['logs_folder'])
 
 err_path = Path(logs_folder, config['upwork']['errors_file'])
 user_agent = config['upwork']['user_agent']
-mitm_folder = Path(parent_dir, config['upwork']['mitm_folder'])
+mitm_folder = Path(parent_dir, config['upwork']['scripts_folder'], config['upwork']['mitm_folder'])
 mitm_cert_path = Path(mitm_folder, config['upwork']['mitm_certificate'])
 proxy = config['upwork']['proxy']
 
