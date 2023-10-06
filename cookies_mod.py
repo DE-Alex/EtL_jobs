@@ -9,12 +9,13 @@ config = configparser.ConfigParser()
 config.read(Path(sys.path[0], 'pipeline.conf'))
 cookies_sqlight_path = config["parser_config"]["FireFox_cookies_sqlight_path"]
 cookies_lz4_path = config["parser_config"]["FireFox_cookies_lz4_path"]
+temp_folder = Path(sys.path[0], config['parser_paths']['temp_folder'])
 
 def read_cookies_sqlight():
     #In Linux FireFox block sqlite file with cookies
     #Let's copy file to read cookies later
     source_path = Path(cookies_sqlight_path)
-    tmp_path = Path(sys.path[0], 'Temp', 'cookies.sqlite')
+    tmp_path = Path(sys.path[0], temp_folder, 'cookies.sqlite')
     tmp_path.write_bytes(source_path.read_bytes())
     path = str(tmp_path)
    
