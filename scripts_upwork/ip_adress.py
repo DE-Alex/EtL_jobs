@@ -13,7 +13,6 @@ logs_folder = Path(parent_dir, config['general']['logs_folder'])
 ip_log_path = Path(logs_folder, config['upwork']['ip_file'])
 mitm_folder = Path(parent_dir, config['upwork']['scripts_folder'], config['upwork']['mitm_folder'])
 mitm_cert_path = Path(mitm_folder, config['upwork']['mitm_certificate'])
-print(mitm_cert_path)
 proxy = config['upwork']['proxy']
 
 def request_service(proxy_port = False):
@@ -23,7 +22,6 @@ def request_service(proxy_port = False):
     else:
         proxyDict = {'http' : f'http://{proxy_port}',
                     'https' : f'https://{proxy_port}'}
-        print(URL, proxyDict, mitm_cert_path)
         ip = requests.get(URL, proxies = proxyDict, verify = mitm_cert_path).text
     return ip
 
