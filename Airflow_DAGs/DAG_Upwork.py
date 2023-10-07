@@ -16,14 +16,14 @@ dag = DAG(
 t1 = BashOperator(
     task_id='check_new_jobs',
     depends_on_past=False,
-    bash_command='~/upwork_scanner/env/bin/python ~/upwork_scanner/main_1_check.py',
+    bash_command='~/upwork_scanner/env/bin/python ~/upwork_scanner/scripts_upwork/upwork1_check.py',
     dag=dag,
 )
 
 t2 = BashOperator(
     task_id='download_jobs',
     depends_on_past=False,
-    bash_command='~/upwork_scanner/env/bin/python ~/upwork_scanner/main_2_download.py',
+    bash_command='~/upwork_scanner/env/bin/python ~/upwork_scanner/scripts_upwork/upwork2_download.py',
     dag=dag,
 )
 
