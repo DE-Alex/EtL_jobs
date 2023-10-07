@@ -11,8 +11,6 @@ config.read(Path(parent_dir, 'pipeline.conf'))
 logs_folder = Path(parent_dir, config['general']['logs_folder'])
 
 ip_log_path = Path(logs_folder, config['upwork']['ip_file'])
-#mitm_folder = Path(config['upwork']['mitm_folder'])
-#mitm_cert_path = Path(sys.path[0], mitm_folder, config['upwork']['mitm_certificate'])
 mitm_folder = Path(parent_dir, config['upwork']['scripts_folder'], config['upwork']['mitm_folder'])
 mitm_cert_path = Path(mitm_folder, config['upwork']['mitm_certificate'])
 print(mitm_cert_path)
