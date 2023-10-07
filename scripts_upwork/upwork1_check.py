@@ -39,12 +39,17 @@ def check_new_jobs():
     #datetime of last successfull ingestion
     try:
         with open(journal_path) as file:
-            result = file.read().split('\n')
-        journal_recs = [i for i in result if i != '']
-    except FileNotFoundError as e:
-        print(f'{journal_path} not found.')
-        journal_recs = ['1970-01-01T00:00:00+03:00']
-    last_check_loc = datetime.fromisoformat(journal_recs[-1])
+            result = file.read().split('\n')            
+    except FileNotFoundError:
+        print(f'"{journal_path}" not found.')
+        result = ['1970-01-01T00:00:00+03:00']
+        
+    journal_recs = [i for i in result if i != '']
+    try:
+        last_check_loc = datetime.fromisoformat(journal_recs[-1])
+    except IndexError:
+        print(f'"{journal_path}" read data error.')
+        last_check_loc = datetime.fromisoformat('1970-01-01T00:00:00+03:00')
     last_check_utc = last_check_loc.astimezone(tzutc) #move to utc timezone
     print('last check (local):', datetime.strftime(last_check_loc, '%Y.%m.%d %H:%M'))
    
