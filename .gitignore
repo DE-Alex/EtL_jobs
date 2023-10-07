@@ -5,6 +5,6 @@ scripts_upwork/mitm/
 working_materials/
 env/
 temp/*
-log/
+log/*
 res
 win_bat
