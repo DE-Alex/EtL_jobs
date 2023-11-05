@@ -3,7 +3,6 @@ import os, sys
 import psycopg
 from pathlib import Path
 
-
 parent_dir = os.path.abspath(os.path.join(sys.path[0], '..'))
 config = configparser.ConfigParser()    
 config.read(Path(parent_dir, 'pipeline.conf'))
@@ -35,7 +34,7 @@ def id_from_db():
     conn.close()
     jobs_id = [item[0] for item in result]
     return jobs_id
-    
+
 def col_names_from_db():
     conn = connect_to_db()
     with conn.cursor() as curs:
@@ -58,8 +57,10 @@ def drop_to_db(jobs, jobs_id):
                 for job in jobs_to_insert:
                     columns = list(job.keys())
                     placeholders = (', ').join(['%s']*len(columns))
-                    cols_str = (', ').join([f'"{name}"' for name in columns]) #"quote" columns to escape lowercase by PostgreSQL
-                    values = [job[key] for key in columns] #form set of values in order by columns
+                    #"quote" columns to escape lowercase by PostgreSQL
+                    cols_str = (', ').join([f'"{name}"' for name in columns])
+                    #form set of values in order by columns
+                    values = [job[key] for key in columns]
                     
                     query = f'INSERT INTO {table_name} ({cols_str}) VALUES ({placeholders})RETURNING id;'
                     curs.execute(query, values)
@@ -79,8 +80,10 @@ def drop_to_db(jobs, jobs_id):
             with conn.cursor() as curs:
                 for job in jobs_to_update:
                     columns = list(job.keys())
-                    placeholders = (', ').join([f'"{key}"=%s' for key in columns]) #"quote" columns to escape lowercase by PostgreSQL
-                    values = [job[key] for key in columns] #form set of values in order by columns
+                    #"quote" columns to escape lowercase by PostgreSQL
+                    placeholders = (', ').join([f'"{key}"=%s' for key in columns])
+                    #form set of values in order by columns
+                    values = [job[key] for key in columns]
 
                     query = f'UPDATE {table_name} SET {placeholders} WHERE id = {job["id"]} RETURNING id;'
                     curs.execute(query, values)
@@ -92,7 +95,7 @@ def drop_to_db(jobs, jobs_id):
             print(e)
             conn.rollback()
             conn.close()
-    return ins_count, upd_count, ins_id
+    return ins_count, upd_count
     
     
 if __name__ == '__main__':
