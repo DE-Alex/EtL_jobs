@@ -13,8 +13,8 @@ import ip_adress
 import requests_upwork
 import parse_json
 
-parent_dir = os.path.abspath(os.path.join(sys.path[0], '..'))
 config = configparser.ConfigParser() 
+parent_dir = os.path.abspath(os.path.join(sys.path[0], '..'))
 config.read(Path(parent_dir, 'pipeline.conf'))
 
 filename_date_format = config['general']['filename_date_format']
@@ -46,12 +46,12 @@ def check_new_jobs():
         
     journal_recs = [i for i in result if i != '']
     try:
-        last_check_loc = datetime.fromisoformat(journal_recs[-1])
+        last_etl_loc = datetime.fromisoformat(journal_recs[-1])
     except IndexError:
         print(f'"{journal_path}" read data error.')
-        last_check_loc = datetime.fromisoformat('1970-01-01T00:00:00+03:00')
-    last_check_utc = last_check_loc.astimezone(tzutc) #move to utc timezone
-    print('last check (local):', datetime.strftime(last_check_loc, '%Y.%m.%d %H:%M'))
+        last_etl_loc = datetime.fromisoformat('1970-01-01T00:00:00+03:00')
+    last_etl_utc = last_etl_loc.astimezone(tzutc) #move to utc timezone
+    print('last check (local):', datetime.strftime(last_etl_loc, '%Y.%m.%d %H:%M'))
    
     #check if proxy enabled
     ip_adress.check_ip() 
@@ -60,20 +60,19 @@ def check_new_jobs():
     start_url = requests_upwork.requests_pattern(page = 'start')
     errors = 0
     try:
-        #request jobs from page 90
-        url_p90 = requests_upwork.requests_pattern(page = 90)
+        #request jobs from page 80
+        url_p90 = requests_upwork.requests_pattern(page = 80)
         req = requests_upwork.send_request(url_p90, start_url)
         json_data = req.json()  
         start_url = url_p90
         jobs = parse_json.get_jobs(json_data)
         
-        #check if there are new jobs on page 90
-        checkpoint = last_check_utc - timedelta(minutes = 120) #to check dates of the jobs on page 90
+        #check if there are new jobs on page 80
         jobs_id = db_operations.id_from_db()
-        actual_jobs = common_functions.select_actual_jobs(jobs, checkpoint, jobs_id)
+        actual_jobs = common_functions.select_actual_jobs(jobs, last_etl_utc, jobs_id)
             
         #download jobs
-        time_start = datetime.now(tzlocal)    
+        etl_start = datetime.now(tzlocal)    
         if len(actual_jobs) == 0:
             print(f'Refresh: download jobs from recent 100 pages.')
             req_list = [[requests_upwork.requests_pattern(i) for i in range(1,100)]]
@@ -84,8 +83,8 @@ def check_new_jobs():
             req_list, _ = requests_upwork.form_requests_list(json_data, start_url) 
         
         #save requests to file
-        time_start_str = datetime.strftime(time_start.replace(microsecond = 0), filename_date_format) #datetime to str in filename format 
-        req_path = Path(temp_folder, f'{time_start_str}{requests_filename}')
+        etl_start_str = datetime.strftime(etl_start.replace(microsecond = 0), filename_date_format) #datetime to str in filename format 
+        req_path = Path(temp_folder, f'{etl_start_str}{requests_filename}')
         common_functions.write_request_list(req_list, req_path)
         
         N_req = sum([len(list) for list in req_list])
@@ -93,18 +92,20 @@ def check_new_jobs():
     
     except SystemExit as e:
         print('Exit.')
+        exit(0)
     except Exception:
         e = traceback.format_exc()
-        print(e)
-        errors += 1
-        time_now = datetime.now(tzlocal).replace(microsecond = 0).isoformat()#datetime to str in isoformat 
-        with open(err_path, 'a') as file: 
-            file.write(time_now + '\n' + str(e) + '\n')
-    finally:
-        if errors > 10:
-            input('Paused. Press any key.')
-            errors = 0
- 
+        err_msg = str(e)
+        errors_log(err_msg)
+        errors = errors + 1
+        if errors > 5:
+            exit(1)
+
+def errors_log(err_msg):
+    time_now = datetime.now(tzlocal).replace(microsecond = 0).isoformat()
+    with open(err_path, 'a') as file: 
+        file.write(f'{time_now} {err_msg}\n')
+            
 if __name__ == '__main__':
     check_new_jobs()
 

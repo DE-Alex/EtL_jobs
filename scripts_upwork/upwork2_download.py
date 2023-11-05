@@ -64,11 +64,11 @@ def download_jobs():
         
     journal_recs = [i for i in result if i != '']
     try:
-        last_check_loc = datetime.fromisoformat(journal_recs[-1])
+        last_etl_loc = datetime.fromisoformat(journal_recs[-1])
     except IndexError:
         print(f'"{journal_path}" read data error.')
-        last_check_loc = datetime.fromisoformat('1970-01-01T00:00:00+03:00')
-    last_check_utc = last_check_loc.astimezone(tzutc) #move to utc timezone
+        last_etl_loc = datetime.fromisoformat('1970-01-01T00:00:00+03:00')
+    last_etl_utc = last_etl_loc.astimezone(tzutc) #move to utc timezone
         
     previous_url = requests_upwork.requests_pattern(page = 'start')
     
@@ -83,18 +83,13 @@ def download_jobs():
                 url = requests[0]
                 req = requests_upwork.send_request(url, previous_url)
                 json_data = req.json()
-                #save json to hard drive @@@@@@@@@@@@@@@
-                # import json
-                # with open(f'{sys.path[0]}\Temp\{N_reqs}.json', 'w') as f: 
-                    # json.dump(json_data, f)
                 
                 previous_url = url
                 print(f'{N_reqs} - OK', end=' ')
-                
-                checkpoint = last_check_utc - timedelta(minutes = 5)
+
                 jobs_id = db_operations.id_from_db()
                 jobs_raw = parse_json.get_jobs(json_data)
-                actual_jobs = common_functions.select_actual_jobs(jobs_raw, checkpoint, jobs_id)
+                actual_jobs = common_functions.select_actual_jobs(jobs_raw, last_etl_utc - timedelta(minutes = 5), jobs_id)
 
                 if len(actual_jobs) == 0:
                     print(f'Too old jobs. Skip the rest')
@@ -104,12 +99,11 @@ def download_jobs():
                     db_columns = db_operations.col_names_from_db()
                     jobs = parse_json.downgrade_structure(jobs_cleared, db_columns)
                
-                    #sorting jobs to insert or update
-                    ins_count, upd_count, new_id = db_operations.drop_to_db(jobs, jobs_id)
+                    #load jobs to database
+                    ins_count, upd_count = db_operations.drop_to_db(jobs, jobs_id)
                     downl_cnt['insert'] = downl_cnt['insert'] + ins_count
                     downl_cnt['update'] = downl_cnt['update'] + upd_count
                     print(f"Result: {downl_cnt['insert']}(+{ins_count}) inserted, {downl_cnt['update']}(+{upd_count}) updated")
-                    jobs_id.extend(new_id)
                     del requests[0]
             common_functions.write_request_list(req_list, req_path)
         
@@ -126,7 +120,7 @@ def download_jobs():
         print(e)
         time_now = datetime.now(tzlocal).replace(microsecond = 0).isoformat()#datetime to str in isoformat 
         with open(err_path, 'a') as file: 
-            file.write(time_now + '\n' + str(e) + '\n')
+            file.write(f'{time_now} {str(e)}\n')
 
 if __name__ == '__main__':
         download_jobs()
