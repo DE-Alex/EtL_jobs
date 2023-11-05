@@ -165,7 +165,7 @@ def send_request(url, previous_url):
             print(f'{i}: ProxyError: ', e)
             time_now = datetime.now(tzlocal).replace(microsecond = 0).isoformat()#datetime obj to str in isoformat
             with open(err_path, 'a') as file: 
-                file.write(time_now + '\n' + e + '\n')
+                file.write(f'{time_now} {str(e)}\n')
             time.sleep(2)
     
 if __name__ == '__main__':
