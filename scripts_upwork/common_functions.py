@@ -5,7 +5,7 @@ from datetime import datetime
 
 #Change work dir, Scan it (without subdirs!) for file and dirs NAMES, and change work dir back
 #MASK: * - any symbols, ? - one symbol, [0-9], [?] or [8] - ? or * 
-def DirScanByMask(f_path, mask): 
+def dir_scan(f_path, mask): 
     temp = os.getcwd()
     os.chdir(f_path)
     file_names = []
@@ -20,7 +20,7 @@ def DirScanByMask(f_path, mask):
 def read_request_list(temp_folder, mask):
     req_list, file_path = False, False
     
-    file_names = DirScanByMask(temp_folder, f'*{mask}')
+    file_names = dir_scan(temp_folder, f'*{mask}')
     for filename in file_names:
         file_path = Path(temp_folder, filename)
         with open(file_path) as file:
@@ -46,7 +46,7 @@ def write_request_list(req_list, req_path):
         with open (req_path, 'w', encoding = 'utf-8') as file:
             file.write(result)
 
-def select_actual_jobs(jobs, checkpoint, jobs_id):
+def select_actual_jobs(jobs, last_etl_date, jobs_id):
     actualJobs = []
     for job in jobs:
         dates = [job['createdOn'], job['publishedOn'], job['renewedOn']]
@@ -54,7 +54,7 @@ def select_actual_jobs(jobs, checkpoint, jobs_id):
         dt_dates.sort()
         dt_newest = dt_dates[-1]
         id = int(job['uid'])
-        if dt_newest < checkpoint and id in jobs_id: 
+        if dt_newest < last_etl_date and id in jobs_id: 
             pass
         else: 
             actualJobs.append(job)
