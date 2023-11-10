@@ -28,7 +28,6 @@ filename_date_format = config['general']['filename_date_format']
 temp_folder = Path(parent_dir, config['general']['temp_folder'])
 logs_folder = Path(parent_dir, config['general']['logs_folder'])
 
-proxy = config['upwork']['proxy']
 requests_filename = config['upwork']['requests_file']
 journal_path = Path(logs_folder, config['upwork']['journal_file'])
 err_path = Path(logs_folder, config['upwork']['errors_file']) 
