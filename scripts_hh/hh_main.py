@@ -1,0 +1,189 @@
+import configparser
+import os, sys
+import time
+import traceback
+import dateutil.parser
+from pathlib import Path
+from datetime import datetime#, timedelta
+from dateutil.tz import tzutc, tzlocal
+import dateutil.parser
+tzlocal = tzlocal()
+
+#import common_functions
+import db_operations
+import hh_requests
+#import parse_json
+
+#read configuration file
+parent_dir = os.path.abspath(os.path.join(sys.path[0], '..'))
+config = configparser.ConfigParser() 
+config.read(Path(parent_dir, 'pipeline.conf'))
+
+filename_date_format = config['general']['filename_date_format']
+temp_folder = Path(parent_dir, config['general']['temp_folder'])
+logs_folder = Path(parent_dir, config['general']['logs_folder'])
+
+requests_filename = config['headhunter']['requests_file']
+err_path = Path(logs_folder, config['headhunter']['errors_file'])
+journal_path = Path(logs_folder, config['headhunter']['journal_file'])
+
+#datetime of last successfull ETL
+try:
+    with open(journal_path) as file:
+        result = file.read().split('\n')
+    journal_recs = [i for i in result if i != '']
+except FileNotFoundError as e:
+    print(f'{journal_path} not found.')
+    journal_recs = ['1970-01-01T00:00:00+03:00']
+last_etl_loc = datetime.fromisoformat(journal_recs[-1])
+last_etl_utc = last_etl_loc.astimezone(tzutc) #move to utc timezone
+print('last check (local):', datetime.strftime(last_etl_loc, '%Y.%m.%d %H:%M'))
+
+#check for new jobs and form list of requests
+errors = 0
+vacancy_cash = []
+vacancy_insert = 0
+vacancy_update = 0
+while errors <5:
+    try:
+        #load dictionaries from www.hh.ru
+        areas = hh_requests.get_areas()
+        metro_stations = hh_requests.get_metro()
+        filters = hh_requests.get_filters()
+        prof_roles = hh_requests.get_professions()
+        jobs_id = db_operations.id_from_db()
+        
+        start_etl = datetime.now(tzlocal)
+        params = {f'from_data = last_check_loc'}
+        search_by_filters(0, params)
+           
+        print(f"Total: {downl_cnt['insert']} inserted, {downl_cnt['update']} updated")
+        delta = round((time.time() - start_etl))//60
+        print(f"Downloaded in {delta} minutes") 
+        
+        etl_date = start_etl.replace(microsecond = 0).isoformat()        
+        journal_recs = ('\n').join(journal_recs[-30:] + [etl_date])
+        with open(journal_path, 'w') as file: 
+            file.write(journal_recs)          
+        
+    except SystemExit as e:
+        print('Exit.')
+        exit(0)
+    except Exception as e:
+        e = traceback.format_exc()
+        err_msg = str(e)
+        errors_log(err_msg)
+        errors = errors + 1
+
+def search_by_filters(i, params)
+    name = sorted(list(filters.keys()))[i]
+    values = filters[name]
+    max_depth = len(filters.keys())
+    for value in values:
+        params.update({name : value})
+        result = get_vacancy_id(params)
+
+        if result == False and i < max_depth:
+            search_by_filters(i+1, params)
+        elif result == False and i = max_depth:
+            search_by_areas(params, areas)
+        del params[name]
+    return None
+    
+def search_by_areas(params, parent):
+    for area in parent:
+        name = area['name']
+        value = area['id']
+        childs = area['areas']
+        params.update({name : value})
+        result = get_vacancy_id(params)
+        
+        if result == False and name == 'Москва':     
+            search_by_metro(params)
+        elif result == False and childs == []:
+            msg = 'All filters used but too many vacancies. Download first 2000'
+            errors_log(msg)
+            get_vacancy_id(params, 'limit_2000')   
+        elif result == False:
+            search_by_areas(params, childs)
+        del params[name]
+    return None
+        
+def search_by_metro(params):
+    for value in metro_stations:
+        params.update({'metro' : value})
+        result = get_vacancy_id(params)
+        if result == False:
+            msg = 'All filters used but too many vacancies. Download first 2000'
+            errors_log(msg)
+            get_vacancy_id(params, 'limit_2000')
+        del params['metro']
+    return None
+    
+def get_vacancy_id(params, limit = 'limit_off'):
+    for page in range(20):
+        url, params = requests_pattern(params, page)
+        json_data = hh_requests.send_request(url, params).json()
+        
+        total_vacancies = json_data['found']
+        total_pages = json_data['pages']
+        if page == 0:
+            print(f"Vacancies: {total_vacancies} Pages: {total_pages}")	
+            
+        if total_vacancies > 1950 and limit == 'limit_off':
+            print(f'adding new filter')
+            return False
+        else:
+            pass
+            
+        new_ids = date_check(json_data['items'])
+        L = len(new_ids)
+        if L > 0:
+            print(f'page: {page+1} New jobs: {L}')
+            download(new_ids)
+        elif L == 0:
+            print(f'Nothing or too old jobs. Skip.')
+        
+        if page == (total_pages -1):
+            break
+    return True
+
+def date_check(jobs):
+    new_ids = []
+    for job in jobs:
+        dates = [dateutil.parser.parse(time) for time in [job['published_at'], job['created_at']] if time != None]
+        dates.sort()
+        newest = dates[-1]
+        id = int(job['id'])
+        if newest < last_etl_utc and id in jobs_id: 
+            pass
+        else: 
+            new_ids.append(id)        
+    return new_ids    
+ 
+def download(new_ids):
+    N = 0
+    print(f'Vacancy: ', end = '')
+    for vac_id in new_ids:
+        url, params = requests_pattern(id = vac_id)
+        json_data = hh_requests.send_request(url, params).json()
+        N += 1
+        print(f'{N} ', sep=' ', end='', flush=True)
+        vacancy = HH_DB_Manager.parse_vacancy(json_data) #@@@@@
+        vacancy_cash.append(vacancy)
+    #print(f'\nTotal: {vacancy_count}')
+    if len(vacancy_cash) >= 100:
+        #load jobs to database
+        ins_count, upd_count  = db_operations.drop_to_db(vacancy_cash, jobs_id)
+        vacancy_insert = vacancy_insert + ins_count
+        vacancy_update = vacancy_update + upd_count
+
+def errors_log(err_msg):
+    time_now = datetime.now(tzlocal).replace(microsecond = 0).isoformat()
+    with open(err_path, 'a') as file: 
+        file.write(f'{time_now} {err_msg}\n')
+            
+if __name__ == '__main__':
+    pass
+			
+
