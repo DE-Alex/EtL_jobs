@@ -10,10 +10,9 @@ from dateutil.tz import tzutc, tzlocal
 tzlocal = tzlocal()
 tzutc = tzutc()
 
-#import common_functions
 import db_operations
 import hh_requests
-#import parse_json
+import parse_json
 
 #read configuration file
 config = configparser.ConfigParser()
@@ -184,7 +183,7 @@ def download(new_ids):
         json_data = hh_requests.send_request(url, params).json()
         N += 1
         print(f'{N} ', sep=' ', end='', flush=True)
-        vacancy = HH_DB_Manager.parse_vacancy(json_data) #@@@@@
+        vacancy = parse_json.parse_vacancy(json_data) #@@@@@
         vacancy_cash.append(vacancy)
     #print(f'\nTotal: {vacancy_count}')
 

@@ -15,7 +15,6 @@ config.read(Path(parent_dir, 'pipeline.conf'))
 filename_date_format = config['general']['filename_date_format']
 logs_folder = Path(parent_dir, config['general']['logs_folder'])
 
-folder = Path(config['upwork']['scripts_folder'])
 err_path = Path(logs_folder, config['upwork']['errors_file']) 
 
 #read useless keys to delete
