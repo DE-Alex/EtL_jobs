@@ -47,18 +47,18 @@ def write_request_list(req_list, req_path):
             file.write(result)
 
 def select_actual_jobs(jobs, last_etl_date, jobs_id):
-    actualJobs = []
+    actual_jobs = []
     for job in jobs:
         dates = [job['createdOn'], job['publishedOn'], job['renewedOn']]
-        dt_dates = [datetime.fromisoformat(item) for item in dates if item != None]
+        dt_dates = [datetime.fromisoformat(dt) for dt in dates if dt != None]
         dt_dates.sort()
         dt_newest = dt_dates[-1]
         id = int(job['uid'])
         if dt_newest < last_etl_date and id in jobs_id: 
             pass
         else: 
-            actualJobs.append(job)
-    return actualJobs
+            actual_jobs.append(job)
+    return actual_jobs
     
 if __name__ == '__main__':
     pass

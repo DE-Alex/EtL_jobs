@@ -18,6 +18,7 @@ config.read(Path(parent_dir, 'pipeline.conf'))
 filename_date_format = config['general']['filename_date_format']
 logs_folder = Path(parent_dir, config['general']['logs_folder'])
 
+request_delay = int(config['upwork']['requests_delay'])
 err_path = Path(logs_folder, config['upwork']['errors_file'])
 user_agent = config['upwork']['user_agent']
 mitm_folder = Path(parent_dir, config['upwork']['scripts_folder'], config['upwork']['mitm_folder'])
@@ -108,17 +109,13 @@ def send_request(url, previous_url):
     else:
         proxy_dict = {'http': f'http://{proxy}', 'https': f'https://{proxy}'}
         
-    time.sleep(3)
-    i = 0
-    while True:
-        i = i + 1
+    time.sleep(request_delay)
+    for i in range(5):
         cookies = cookies_mod.select_cookies()
-
         for cookie in cookies:
             if cookie['name'] == 'oauth2_global_js_token': 
                 Token = 'Bearer ' + cookie['value']
             cookies_jar.set(cookie['name'],cookie['value'])
-        
             
         my_headers={'User-Agent' : user_agent,
                     'Accept': 'application/json, text/plain, */*',
@@ -147,26 +144,22 @@ def send_request(url, previous_url):
             if req.status_code == requests.codes.ok: 
                 return req
             else:
+                t_sleep = 120
+                err_msg = f'{i}: status code {req.status_code}. Paused for {t_sleep//60} min.'
+                print(err_msg)
                 time_now = datetime.now(tzlocal).replace(microsecond = 0).isoformat()#datetime obj to str in isoformat
                 with open(err_path, 'a') as file: 
-                    file.write(f'{time_now} {i}:code {req.status_code}\n')
-                
-                if req.status_code == 403: 
-                    print(f'{i}: 403 Forbidden. Paused for 5 min.')
-                    time.sleep(300)
-                else: 
-                    print(f'{i}: status code {req.status_code}. Paused for 0.5 min.')
-                    time.sleep(30)
-            if i >= 6:
-                print('Paused for 30 min.')
-                time.sleep(1800)
-                i = 0               
+                    file.write(f'{time_now} {err_msg}\n')
+                time.sleep(t_sleep)
         except requests.exceptions.ProxyError as e: 
             print(f'{i}: ProxyError: ', e)
             time_now = datetime.now(tzlocal).replace(microsecond = 0).isoformat()#datetime obj to str in isoformat
             with open(err_path, 'a') as file: 
                 file.write(f'{time_now} {str(e)}\n')
             time.sleep(2)
+            
+    #requests.get failed for i times. Exit.
+    exit(1)
     
 if __name__ == '__main__':
     pass

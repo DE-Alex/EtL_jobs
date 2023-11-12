@@ -13,6 +13,7 @@ import ip_adress
 import requests_upwork
 import parse_json
 
+#read configuration file
 config = configparser.ConfigParser() 
 parent_dir = os.path.abspath(os.path.join(sys.path[0], '..'))
 config.read(Path(parent_dir, 'pipeline.conf'))
@@ -97,6 +98,7 @@ def check_new_jobs():
         err_msg = str(e)
         errors_log(err_msg)
         errors = errors + 1
+        print(err_msg)
         if errors > 5:
             exit(1)
 
