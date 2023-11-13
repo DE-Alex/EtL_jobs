@@ -36,13 +36,13 @@ def id_from_db():
     jobs_id = [item[0] for item in result]
     return jobs_id
     
-def col_names_from_db():
-    conn = connect_to_db()
-    with conn.cursor() as curs:
-        curs.execute(f'SELECT * FROM {table_name} LIMIT 0;')
-        columns = [desc[0] for desc in curs.description]
-    conn.close()
-    return columns
+#def col_names_from_db():
+#    conn = connect_to_db()
+#    with conn.cursor() as curs:
+#        curs.execute(f'SELECT * FROM {table_name} LIMIT 0;')
+#        columns = [desc[0] for desc in curs.description]
+#    conn.close()
+#    return columns
    
 def drop_to_db(jobs, jobs_id):
     jobs_to_insert = [job for job in jobs if int(job['id']) not in jobs_id]

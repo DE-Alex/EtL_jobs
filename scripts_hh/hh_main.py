@@ -31,7 +31,7 @@ print('Load dictionaries from www.hh.ru')
 areas = hh_requests.get_areas()
 metro_stations = hh_requests.get_metro()
 filters = hh_requests.get_filters()
-#prof_roles = hh_requests.get_professions()
+prof_roles = hh_requests.get_professions()
 jobs_id = db_operations.id_from_db()
 
 #datetime of last successfull ingestion
@@ -54,33 +54,35 @@ print('last check (local):', datetime.strftime(last_etl_loc, '%Y.%m.%d %H:%M'))
 
 def main():
     #check for new jobs and form list of requests
-    errors = 0
-    #vacancy_insert = 0
-    #vacancy_update = 0
-    while errors <5:
-        try:
-            start_etl = datetime.now(tzlocal)
-            params = {'date_from' : last_rec}
-            search_by_filters(0, params)
-               
-            #print(f"Total: {downl_cnt['insert']} inserted, {downl_cnt['update']} updated")
-            delta = round((time.time() - start_etl))//60
-            print(f"Downloaded in {delta} minutes") 
-            
-            etl_date = start_etl.replace(microsecond = 0).isoformat()        
-            journal_recs = ('\n').join(journal_recs[-30:] + [etl_date])
-            with open(journal_path, 'w') as file: 
-                file.write(journal_recs)          
-            
-        except SystemExit as e:
-            print('Exit.')
-            exit(0)
-        except Exception as e:
-            e = traceback.format_exc()
-            err_msg = str(e)
-            print(err_msg)
-            errors_log(err_msg)
-            errors = errors + 1
+    for prof_id in prof_roles:
+    
+        errors = 0
+        #vacancy_insert = 0
+        #vacancy_update = 0
+        while errors <5:
+            try:
+                start_etl = datetime.now(tzlocal)
+                params = {'date_from' : last_rec, 'professional_role' : prof_id}
+                search_by_filters(0, params)
+                   
+                #print(f"Total: {downl_cnt['insert']} inserted, {downl_cnt['update']} updated")
+                delta = round((time.time() - start_etl))//60
+                print(f"Downloaded in {delta} minutes") 
+                
+                etl_date = start_etl.replace(microsecond = 0).isoformat()        
+                journal_recs = ('\n').join(journal_recs[-30:] + [etl_date])
+                with open(journal_path, 'w') as file: 
+                    file.write(journal_recs)          
+                
+            except SystemExit as e:
+                print('Exit.')
+                exit(0)
+            except Exception as e:
+                e = traceback.format_exc()
+                err_msg = str(e)
+                print(err_msg)
+                errors_log(err_msg)
+                errors = errors + 1
     return None
     
 def search_by_filters(i, params):
@@ -188,9 +190,10 @@ def download(new_ids):
     #print(f'\nTotal: {vacancy_count}')
 
     #load jobs to database
-    ins_count, upd_count  = db_operations.drop_to_db(vacancy_cash, jobs_id)
-    vacancy_insert = vacancy_insert + ins_count
-    vacancy_update = vacancy_update + upd_count
+    ins_count, upd_count, ins_id  = db_operations.drop_to_db(vacancy_cash, jobs_id)
+    jobs_id.extend(ins_id)
+    #vacancy_insert = vacancy_insert + ins_count
+    #vacancy_update = vacancy_update + upd_count
 
 def errors_log(err_msg):
     time_now = datetime.now(tzlocal).replace(microsecond = 0).isoformat()

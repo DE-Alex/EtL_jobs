@@ -61,10 +61,10 @@ def get_professions():
     path = Path(sys.path[0], 'profs_black_list.txt')
     with open(path) as f:
         dt = f.read().split('\n')
-    black_list = [t.split(' ')[0] for t in dt]
+    #id list of professions in blacklist    
+    id_black = [t.split(' ')[0] for t in dt]
     
-    white_list = [[id, name] for id, name in tmp if id not in black_list]
-    print('Professions loaded')
+    white_list = [id for id, name in tmp if id not in id_black]
     return white_list
     
 def requests_pattern(params = {}, page = 0, id = False):

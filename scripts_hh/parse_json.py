@@ -53,13 +53,6 @@ def parse_vacancy(vacancy):
                 #'address_lat' : vacancy.get('address').get('lat'),
                 #'address_lng' : vacancy.get('address').get('lng'),
                 
-                'salary_from' : vacancy['salary'].get('from'),
-                'salary_to' : vacancy['salary'].get('to'),
-                'currency' : vacancy['salary'].get('currency'),
-                'gross' : vacancy['salary'].get('gross'),
-                'address_lat' : vacancy['address'].get('lat'),
-                'address_lng' : vacancy['address'].get('lng'),
-                
                 'published_at' : vacancy['published_at'],
                 'created_at' : vacancy['created_at'],
                 'employer' : vacancy['employer']['name'],
@@ -68,6 +61,29 @@ def parse_vacancy(vacancy):
                 'employment' : vacancy['employment']['id'],
                 'archived' : vacancy['archived']
                 }
+        
+        
+        sal = [('salary_from', 'from'), ('salary_to', 'to'), ('currency', 'currency'), ('gross', 'gross')]
+        for a, b in sal:
+            if vacancy.get('salary'):
+                job[a] = vacancy['salary'].get(b)
+            else:
+                job[a] = None
+                
+        adr = [('address_lat', 'lat'), ('address_lng', 'lng')]   
+
+        for a, b in adr:
+            if vacancy.get('address'):        
+                job[a] = vacancy['address'].get(b)
+        else:
+            job[a] = None         
+                        
+#        'salary_from' : vacancy['salary'].get('from')
+#        'salary_to' : vacancy['salary'].get('to')
+#        'currency' : vacancy['salary'].get('currency')
+#        'gross' : vacancy['salary'].get('gross')
+#        'address_lat' : vacancy['address'].get('lat')
+#        'address_lng' : vacancy['address'].get('lng')        
 
         skills_list = [skill['name'] for skill in vacancy['key_skills']]
         skills_list.sort()
