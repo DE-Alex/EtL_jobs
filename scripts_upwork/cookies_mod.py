@@ -1,7 +1,7 @@
 import os, sys
+import time
 import sqlite3
 import lz4.block as lz4
-import sqlite3
 import configparser
 from pathlib import Path
 
@@ -54,6 +54,8 @@ def read_cookies_json():
             break
         except Exception as e:
             print(e)
+            time.sleep(1)
+            
     string = binary.decode('utf-8')
     string = string.replace('true', 'True')
     string = string.replace('false', 'False')
